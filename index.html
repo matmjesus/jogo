@@ -169,7 +169,8 @@
         let mode = ''; let level = 1; let score = 0; let timeLeft = 15;
         let timerId; let internalSeq = []; let playerSeq = []; let gameActive = false;
 
-        const icons = ['🐶','🚀','🧠','💎','🔥','⭐','🌈','👾','🍀','🍕','🦁','🛸'];
+        // Banco expandido de ícones para suportar grades muito maiores em níveis altos
+        const icons = ['🐶','🚀','🧠','💎','🔥','⭐','🌈','👾','🍀','🍕','🦁','🛸','🍎','🎸','👑','🎈','🚗','🦊','🦈','🍩'];
 
         function loadGame(m) {
             mode = m; level = 1; score = 0;
@@ -241,30 +242,37 @@
             }
         }
 
-        // --- 🔢 PARES NUMÉRICOS (JOGO DOS PARES) ---
+        // --- 🔢 PARES NUMÉRICOS ATUALIZADO (DIFICULDADE CRESCENTE POR NÍVEL) ---
         function playMemoria(stage) {
-            let pairs = Math.min(10, 2 + Math.floor((level - 1) / 1.5));
+            // Define a quantidade de pares escalando a cada nível (Nível 1 = 2 pares, Nível 2 = 3 pares, Nível 3 = 4 pares...)
+            // O limite máximo é definido pelo tamanho do banco de ícones (20 pares = 40 cartas)
+            let pairs = Math.min(20, 1 + level); 
+            let totalCards = pairs * 2;
             let deck = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5);
             let flipped = [];
             
+            // Calcula as colunas de forma inteligente para manter o formato do grid simétrico
             let cols = 2;
-            if (pairs === 3) cols = 3;
-            else if (pairs === 4) cols = 4;
-            else if (pairs === 5 || pairs === 10) cols = 5;
-            else if (pairs >= 6) cols = 4;
+            if (totalCards % 5 === 0 && totalCards !== 10) cols = 5;
+            else if (totalCards % 4 === 0) cols = 4;
+            else if (totalCards % 3 === 0) cols = 3;
+            else if (totalCards > 10) cols = 4;
 
-            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">ENCONTRE OS PARES IDÊNTICOS!</p>
-                               <div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:350px;"></div>`;
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">ENCONTRE OS PARES! (${totalCards} PEÇAS)</p>
+                               <div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:420px;"></div>`;
             const grid = stage.querySelector('#mem-grid');
 
-            deck.forEach((icon, i) => {
+            deck.forEach((icon) => {
                 const c = document.createElement('div'); 
                 c.className = 'mem-card'; 
                 
+                // Configurações responsivas para caber perfeitamente na tela do celular sem quebrar
                 c.style.setProperty('width', '100%', 'important');
                 c.style.setProperty('height', 'auto', 'important');
                 c.style.setProperty('aspect-ratio', '1', 'important');
-                c.style.fontSize = pairs >= 8 ? '1.5rem' : '2rem';
+                
+                // Diminui o emoji caso haja muitas cartas na tela
+                c.style.fontSize = totalCards > 16 ? '1.3rem' : (totalCards > 8 ? '1.7rem' : '2rem');
                 c.innerText = '?';
                 
                 c.onclick = () => {
@@ -301,7 +309,7 @@
             });
         }
 
-        // --- ➕ CÁLCULO RÁPIDO REFORMULADO (SEM TRUQUES DE UNIDADE) ---
+        // --- ➕ CÁLCULO RÁPIDO ---
         function playCalculo(stage) {
             let a = Math.floor(Math.random() * (10 * level)) + 1;
             let b = Math.floor(Math.random() * (10 * level)) + 1;
@@ -310,12 +318,7 @@
             stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:25px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
             const optsContainer = stage.querySelector('#opts');
             
-            // Cria um Set para garantir 4 respostas únicas e de alta semelhança visual
             let optionsSet = new Set([res]);
-            
-            // Pool de variações estruturadas para camuflar a resposta correta
-            // (+10, -10, +20 mudam a dezena mantendo a mesma unidade)
-            // (+1, -1, +2 aproximam o número anulando a eliminação por aproximação)
             let pool = [10, -10, 1, -1, 2, -2, 20, -20];
             
             for (let v of pool) {
@@ -324,12 +327,10 @@
                 if (fake > 0) optionsSet.add(fake);
             }
             
-            // Fallback de segurança absoluto para níveis iniciais com números muito pequenos
             while (optionsSet.size < 4) {
                 optionsSet.add(res + Math.floor(Math.random() * 10) + 1);
             }
             
-            // Converte em array e embaralha as opções finais
             let options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
             
             options.forEach(o => {
@@ -378,11 +379,10 @@
             }, 1000 + Math.random() * 3000);
         }
 
-        // --- 🔲 PADRÃO MATRIZ (GRADE EVOLUTIVA 2x2 ATÉ 6x6) ---
+        // --- 🔲 PADRÃO MATRIZ ---
         function playMatriz(stage) {
             let side = Math.min(6, 2 + (level - 1));
             let size = side * side;
-            
             let count = Math.min(size - 2, 1 + level);
             
             stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">DECORE O PADRÃO ILUMINADO!</p>
