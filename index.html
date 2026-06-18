@@ -55,22 +55,26 @@
             border-right: 2px solid rgba(255,255,255,0.1);
         }
 
-        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; }
+        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; width: 100%; }
 
         /* JOGO DAS CORES */
-        .color-grid { display: grid; grid-template-columns: repeat(2, 180px); gap: 20px; }
+        .color-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 380px; width: 100%; }
         .pad {
-            width: 180px; height: 180px; border-radius: 25px; cursor: pointer;
-            position: relative; border: 5px solid rgba(0,0,0,0.2);
+            aspect-ratio: 1; border-radius: 25px; cursor: pointer;
+            position: relative; border: 5px solid rgba(0,0,0,0.2); width: 100%;
         }
         .pad.active { transform: scale(0.95); box-shadow: 0 0 60px white; filter: brightness(1.6); }
         
-        /* BOTÕES GERAIS E STROOP OTIMIZADO */
-        #opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; max-width: 700px; }
+        /* BOTÕES GERAIS */
+        #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; max-width: 650px; }
+        
+        /* GRID EXCLUSIVO DO TESTE STROOP REFORMULADO */
+        #stroop-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; max-width: 700px; }
+
         .stroop-btn {
-            padding: 25px 20px; border-radius: 18px; border: none; font-family: 'Montserrat', sans-serif;
-            font-size: 2rem; font-weight: 900; color: white; cursor: pointer; text-shadow: 2px 3px 6px rgba(0,0,0,0.6);
-            box-shadow: 0 8px 0 rgba(0,0,0,0.3); text-align: center; width: 100%;
+            padding: 22px 20px; border-radius: 18px; border: none; font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem; font-weight: 900; color: white; cursor: pointer; text-shadow: 2px 3px 6px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.3); text-align: center; min-width: 150px;
         }
         .stroop-btn:hover { transform: translateY(-3px); box-shadow: 0 11px 0 rgba(0,0,0,0.3); }
         .stroop-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.3); }
@@ -78,7 +82,7 @@
         .timer-circle { width: 110px; height: 110px; border-radius: 50%; border: 6px solid white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.1); }
         .btn-exit { position: absolute; top: 20px; right: 30px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; z-index: 10; }
         
-        /* MEMÓRIA */
+        /* MEMÓRIA e GERAIS */
         .mem-card { 
             background: var(--blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; 
             cursor: pointer; border-bottom: 5px solid rgba(0,0,0,0.3); user-select: none; font-weight: 900;
@@ -94,24 +98,23 @@
 
         @media (max-width: 768px) {
             #home-screen { padding: 20px 15px; justify-content: flex-start; }
-            .logo { font-size: 2rem; margin-top: 10px; margin-bottom: 20px; }
-            .menu-grid { grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }
-            .game-card { padding: 12px 8px; font-size: 0.8rem; border-bottom-width: 4px; }
-            .game-card span { font-size: 1.5rem; }
+            .logo { font-size: 1.8rem; margin-top: 10px; margin-bottom: 20px; }
+            .menu-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+            .game-card { padding: 12px 6px; font-size: 0.75rem; border-bottom-width: 4px; }
+            .game-card span { font-size: 1.3rem; }
 
             #game-interface { flex-direction: column; }
             .sidebar { width: 100%; height: auto; flex-direction: row; padding: 10px 15px; border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); justify-content: space-between; }
-            .sidebar h1 { font-size: 1.1rem; }
-            .sidebar p { margin: 0; font-size: 0.75rem; }
+            .sidebar h1 { font-size: 1rem; }
+            .sidebar p { margin: 0; font-size: 0.7rem; }
             .sidebar > div:last-child { display: none; }
-            .timer-circle { width: 50px; height: 50px; font-size: 1.2rem; border-width: 3px; }
-            .main-stage { padding: 10px; }
+            .timer-circle { width: 45px; height: 45px; font-size: 1.1rem; border-width: 3px; }
+            .main-stage { padding: 15px; }
             .btn-exit { position: absolute; top: 12px; right: 12px; padding: 4px 8px; font-size: 0.65rem; }
             
-            #opts { gap: 12px; width: 95%; }
-            .stroop-btn { font-size: 1.4rem; padding: 18px 10px; border-radius: 14px; }
-            .color-grid { grid-template-columns: repeat(2, 120px); gap: 10px; }
-            .pad { width: 120px; height: 120px; }
+            #opts, #stroop-opts { gap: 10px; width: 100%; }
+            .stroop-btn { font-size: 1.2rem; padding: 15px 10px; border-radius: 12px; min-width: 110px; }
+            .color-grid { max-width: 250px; gap: 10px; }
         }
     </style>
 </head>
@@ -166,15 +169,23 @@
             initLevel();
         }
 
-        function initLevel() {
-            gameActive = true; timeLeft = mode == 'alvo' ? 20 : 15;
-            document.getElementById('lvl').innerText = level;
-            document.getElementById('scr').innerText = score;
+        function clearAllMechanics() {
+            clearInterval(timerId);
+            if(gameLoopInterval) { clearInterval(gameLoopInterval); gameLoopInterval = null; }
             const stage = document.getElementById('stage');
             stage.innerHTML = '';
-            stage.style = ''; 
-            clearInterval(timerId);
-            if(gameLoopInterval) clearInterval(gameLoopInterval);
+            stage.removeAttribute('style');
+            stage.className = 'main-stage';
+        }
+
+        function initLevel() {
+            gameActive = true; 
+            timeLeft = mode === 'alvo' ? 20 : 15;
+            document.getElementById('lvl').innerText = level;
+            document.getElementById('scr').innerText = score;
+            
+            clearAllMechanics();
+            const stage = document.getElementById('stage');
 
             if (mode === 'cores') playCores(stage);
             else if (mode === 'memoria') playMemoria(stage);
@@ -193,14 +204,14 @@
             startTimer();
         }
 
-        // --- GÊNIO DAS CORES ---
+        // --- 1. GÊNIO DAS CORES ---
         function playCores(stage) {
             stage.innerHTML = `<div class="color-grid"><div class="pad" style="background:var(--blue)" onclick="handleColorClick(this,0)"></div><div class="pad" style="background:var(--red)" onclick="handleColorClick(this,1)"></div><div class="pad" style="background:var(--green)" onclick="handleColorClick(this,2)"></div><div class="pad" style="background:var(--yellow)" onclick="handleColorClick(this,3)"></div></div>`;
             internalSeq = Array.from({length: level + 1}, () => Math.floor(Math.random() * 4)); playerSeq = []; runSequence();
         }
         async function runSequence() {
             gameActive = false;
-            for (let id of internalSeq) { await new Promise(r => setTimeout(r, 500)); const p = document.querySelectorAll('.pad')[id]; p.classList.add('active'); setTimeout(() => p.classList.remove('active'), 350); }
+            for (let id of internalSeq) { await new Promise(r => setTimeout(r, 500)); const p = document.querySelectorAll('.pad')[id]; if(p) { p.classList.add('active'); setTimeout(() => p.classList.remove('active'), 350); } }
             gameActive = true;
         }
         function handleColorClick(el, id) {
@@ -209,19 +220,15 @@
             else if (playerSeq.length === internalSeq.length) { score += 50; level++; setTimeout(initLevel, 600); }
         }
 
-        // --- PARES NUMÉRICOS ---
+        // --- 2. PARES NUMÉRICOS ---
         function playMemoria(stage) {
-            let pairs = Math.min(20, 1 + level); let totalCards = pairs * 2;
+            let pairs = Math.min(10, 1 + level); let totalCards = pairs * 2;
             let deck = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5); let flipped = [];
-            let cols = totalCards % 5 === 0 && totalCards !== 10 ? 5 : (totalCards % 4 === 0 ? 4 : (totalCards % 3 === 0 ? 3 : 4));
-            let rows = Math.ceil(totalCards / cols);
-            let cardSize = window.innerWidth <= 768 ? `calc(60vmin / ${rows})` : `calc(65vmin / ${rows})`;
-            stage.innerHTML = `<p style="font-size:1.1rem; margin-bottom:10px; font-weight:700;">ENCONTRE OS PARES! (${totalCards} PEÇAS)</p><div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:min(1.5vmin, 10px); width:max-content; max-width:min(85vw, 750px); margin:0 auto;"></div>`;
+            let cols = totalCards % 5 === 0 ? 5 : 4;
+            stage.innerHTML = `<p style="font-size:1.1rem; margin-bottom:15px; font-weight:700; text-align:center;">ENCONTRE OS PARES!</p><div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:400px;"></div>`;
             const grid = stage.querySelector('#mem-grid');
             deck.forEach((icon, i) => {
-                const c = document.createElement('div'); c.className = 'mem-card'; c.style.width = cardSize; c.style.height = cardSize;
-                c.style.maxWidth = window.innerWidth <= 768 ? "65px" : "100px"; c.style.maxHeight = c.style.maxWidth;
-                c.style.minWidth = "40px"; c.style.minHeight = "40px"; c.style.fontSize = `calc(${c.style.width} * 0.45)`; c.innerText = i + 1;
+                const c = document.createElement('div'); c.className = 'mem-card'; c.style.aspectRatio = '1'; c.style.fontSize = '1.5rem'; c.innerText = i + 1;
                 c.onclick = () => {
                     if (flipped.length < 2 && !c.classList.contains('flipped')) {
                         c.classList.add('flipped'); c.innerText = icon; c.style.background = 'white'; c.style.color = 'black'; flipped.push(c);
@@ -235,51 +242,56 @@
             });
         }
 
-        // --- CÁLCULO RÁPIDO ---
+        // --- 3. CÁLCULO RÁPIDO ---
         function playCalculo(stage) {
-            let a = Math.floor(Math.random() * (10 * level)), b = Math.floor(Math.random() * (10 * level)); let res = a + b;
-            stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:20px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
-            [res, res+2, res-3, res+5].sort(() => Math.random()-0.5).forEach(o => {
+            let a = Math.floor(Math.random() * (5 * level)) + 2, b = Math.floor(Math.random() * (5 * level)) + 2; let res = a + b;
+            stage.innerHTML = `<h1 style="font-size:3.5rem; margin: 0 0 20px 0; text-align:center;">${a} + ${b} = ?</h1><div id="opts"></div>`;
+            [res, res+2, res-1, res+4].sort(() => Math.random()-0.5).forEach(o => {
                 const btn = document.createElement('button'); btn.className = 'stroop-btn'; btn.style.background = 'var(--blue)'; btn.innerText = o;
                 btn.onclick = () => { if(o === res) { score += 30; level++; initLevel(); } else { alert("Errado!"); location.reload(); } };
                 stage.querySelector('#opts').appendChild(btn);
             });
         }
 
-        // --- FOCO SELETIVO ---
+        // --- 4. FOCO SELETIVO ---
         function playFoco(stage) {
             let chars = ['M', 'W', 'N']; let main = chars[level % 3], intruder = 'H';
-            stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.justifyContent = 'center'; stage.style.maxWidth = '500px';
-            for(let i=0; i<35+(level*5); i++) {
-                const d = document.createElement('span'); d.style.fontSize = '2.2rem'; d.style.padding = '8px'; d.style.cursor = 'pointer'; d.innerText = main;
-                if(i === 22) { d.innerText = intruder; d.onclick = () => { score += 40; level++; initLevel(); } }
+            let wrapper = document.createElement('div');
+            wrapper.style.display = 'flex'; wrapper.style.flexWrap = 'wrap'; wrapper.style.justifyContent = 'center'; wrapper.style.maxWidth = '450px';
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">ACHE A LETRA '${intruder}'</p>`;
+            
+            for(let i=0; i < Math.min(100, 35 + (level*5)); i++) {
+                const d = document.createElement('span'); d.style.fontSize = '2rem'; d.style.padding = '5px'; d.style.cursor = 'pointer'; d.innerText = main;
+                if(i === 18) { d.innerText = intruder; d.onclick = () => { score += 40; level++; initLevel(); } }
                 else { d.onclick = () => { alert("Incorreto!"); location.reload(); } }
-                stage.appendChild(d);
+                wrapper.appendChild(d);
             }
+            stage.appendChild(wrapper);
         }
 
-        // --- ORDEM CRESCENTE ---
+        // --- 5. ORDEM CRESCENTE ---
         function playOrdem(stage) {
             let nums = Array.from({length: Math.min(12, 3+level)}, () => Math.floor(Math.random()*100)); let sorted = [...nums].sort((a,b) => a-b); let idx = 0;
-            stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.gap = '12px';
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">CLIQUE EM ORDEM CRESCENTE!</p><div id="opts"></div>`;
+            const container = stage.querySelector('#opts');
             nums.forEach(n => {
                 const b = document.createElement('div'); b.className = 'mem-card'; b.style.width='65px'; b.style.height='65px'; b.style.fontSize='1.4rem'; b.innerText = n;
-                b.onclick = () => { if(n === sorted[idx]) { b.style.background = 'var(--gray)'; b.style.opacity = '0.4'; idx++; if(idx === nums.length) { score += 50; level++; initLevel(); } } else { alert("Ordem errada!"); location.reload(); } };
-                stage.appendChild(b);
+                b.onclick = () => { if(n === sorted[idx]) { b.style.background = 'var(--gray)'; b.style.opacity = '0.4'; b.style.pointerEvents = 'none'; idx++; if(idx === nums.length) { score += 50; level++; initLevel(); } } else { alert("Ordem errada!"); location.reload(); } };
+                container.appendChild(b);
             });
         }
 
-        // --- VELOCIDADE LUZ ---
+        // --- 6. VELOCIDADE LUZ ---
         function playReacao(stage) {
-            stage.innerHTML = '<h1>AGUARDE O VERDE...</h1>';
+            stage.innerHTML = '<h1 style="text-align:center;">AGUARDE O VERDE...</h1>';
             setTimeout(() => {
                 if(mode !== 'reacao') return;
-                stage.innerHTML = '<div id="target" style="width:220px;height:220px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer"><h1>CLIQUE!</h1></div>';
+                stage.innerHTML = '<div id="target" style="width:200px;height:200px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow: 0 0 30px var(--green)"><h1>CLIQUE!</h1></div>';
                 stage.querySelector('#target').onclick = () => { score += 100; level++; initLevel(); };
-            }, 1200 + Math.random() * 2500);
+            }, 1000 + Math.random() * 2000);
         }
 
-        // --- 🎨 TESTE STROOP REFORMULADO (MÁXIMA INTERFERÊNCIA E BOTÕES GRANDES) ---
+        // --- 7. TESTE STROOP REFORMULADO (MÁXIMA INTERFERÊNCIA E BOTÕES GRANDES) ---
         function playStroop(stage) {
             const palette = [
                 { name: 'AZUL', color: 'var(--blue)' }, { name: 'VERMELHO', color: 'var(--red)' },
@@ -292,9 +304,9 @@
             let colorItem = palette[Math.floor(Math.random() * palette.length)];
             
             stage.innerHTML = `
-                <p style="font-size:1.3rem; font-weight:700; margin-bottom:5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">QUAL A COR DO TEXTO?</p>
-                <h1 style="font-size:4.5rem; color:${colorItem.color}; text-shadow: 3px 5px 15px rgba(0,0,0,0.7); margin:15px 0; font-weight:900; letter-spacing:2px;">${wordItem.name}</h1>
-                <div id="opts"></div>`;
+                <p style="font-size:1.3rem; font-weight:700; margin-bottom:5px; text-align:center;">QUAL A COR DO TEXTO?</p>
+                <h1 style="font-size:4.5rem; color:${colorItem.color}; text-shadow: 3px 5px 15px rgba(0,0,0,0.7); margin:10px 0; font-weight:900; text-align:center;">${wordItem.name}</h1>
+                <div id="stroop-opts"></div>`;
             
             let options = [colorItem]; 
             let remaining = palette.filter(item => item.color !== colorItem.color).sort(() => Math.random() - 0.5);
@@ -302,88 +314,82 @@
             for(let i = 0; i < 3; i++) options.push(remaining[i]);
             options.sort(() => Math.random() - 0.5);
             
-            const container = stage.querySelector('#opts');
+            const container = stage.querySelector('#stroop-opts');
             options.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'stroop-btn'; 
-                
-                // Embaralha uma cor de fundo para o próprio botão para gerar distração visual
                 let randomBgColor = palette[Math.floor(Math.random() * palette.length)].color;
                 btn.style.background = randomBgColor;
-                
                 btn.innerText = opt.name;
+                
                 btn.onclick = () => {
-                    if(opt.color === colorItem.color) { 
-                        score += 35; level++; initLevel(); 
-                    } else { 
-                        alert("Incorreto! Responda focado apenas na COR do texto principal lá de cima."); 
-                        location.reload(); 
-                    }
+                    if(opt.color === colorItem.color) { score += 35; level++; initLevel(); } 
+                    else { alert("Incorreto! Foque apenas na COR do texto principal."); location.reload(); }
                 };
                 container.appendChild(btn);
             });
         }
 
-        // --- TIRO AO ALVO SÚBITO ---
+        // --- 8. TIRO AO ALVO SÚBITO ---
         function playAlvo(stage) {
-            stage.innerHTML = `<p style="position:absolute; top:5px; font-weight:700;">NÍVEL ${level}: CLIQUE NAS BOLAS COLORIDAS! FUJA DA VERMELHA (❌)!</p>`;
+            stage.innerHTML = `<p style="text-align:center; font-weight:700; margin-bottom:10px;">CLIQUE NAS BOLAS! FUJA DA VERMELHA (❌)!</p>`;
             let targetsHit = 0; let targetGoal = 3 + level;
             function spawnBubble() {
                 if(mode !== 'alvo' || targetsHit >= targetGoal) return;
                 const bubble = document.createElement('div'); bubble.className = 'target-bubble';
-                let isBomb = Math.random() < 0.25; let size = Math.max(50, 100 - (level * 4));
+                let isBomb = Math.random() < 0.25; let size = Math.max(55, 100 - (level * 3));
                 bubble.style.width = size + 'px'; bubble.style.height = size + 'px';
-                bubble.style.top = Math.random() * (stage.clientHeight - size - 40) + 30 + 'px';
+                bubble.style.top = Math.random() * (stage.clientHeight - size - 60) + 40 + 'px';
                 bubble.style.left = Math.random() * (stage.clientWidth - size - 20) + 10 + 'px';
                 if (isBomb) {
                     bubble.style.background = 'var(--red)'; bubble.innerText = '❌';
-                    bubble.onclick = () => { alert("Você explodiu a bomba! Fim de jogo."); location.reload(); };
+                    bubble.onclick = () => { alert("Você explodiu a bomba!"); location.reload(); };
                 } else {
                     bubble.style.background = ['var(--blue)', 'var(--green)', 'var(--cyan)', 'var(--purple)'][Math.floor(Math.random()*4)]; bubble.innerText = '🎯';
                     bubble.onclick = (e) => { e.stopPropagation(); bubble.remove(); targetsHit++; score += 15; document.getElementById('scr').innerText = score; if(targetsHit >= targetGoal) { level++; initLevel(); } };
                 }
                 stage.appendChild(bubble);
-                setTimeout(() => { if(bubble) bubble.remove(); }, Math.max(800, 2000 - (level * 100)));
+                setTimeout(() => { if(bubble) bubble.remove(); }, Math.max(700, 2000 - (level * 100)));
             }
-            gameLoopInterval = setInterval(spawnBubble, Math.max(400, 1000 - (level * 50)));
+            gameLoopInterval = setInterval(spawnBubble, Math.max(350, 900 - (level * 40)));
         }
 
-        // --- CADÊ O NÚMERO RÁPIDO ---
+        // --- 9. CADÊ O NÚMERO? ---
         function playProcurar(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px">ENCONTRE O ÚNICO NÚMERO ESCONDIDO!</p><div id="find-grid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:10px;"></div>`;
-            const grid = stage.querySelector('#find-grid');
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">ENCONTRE O ÚNICO NÚMERO ESCONDIDO!</p><div id="opts"></div>`;
+            const container = stage.querySelector('#opts');
             let pool = ['X','Y','Z','W','K','P','H','A','#','$','&','@','?','*','%'];
             let hiddenNumber = Math.floor(Math.random() * 10).toString();
-            let totalCells = Math.min(54, 24 + (level * 6));
+            let totalCells = Math.min(36, 16 + (level * 4));
             let items = Array.from({length: totalCells - 1}, () => pool[Math.floor(Math.random()*pool.length)]);
             items.push(hiddenNumber); items.sort(() => Math.random() - 0.5);
             items.forEach(item => {
-                const cell = document.createElement('div'); cell.className = 'mem-card'; cell.style.width = '45px'; cell.style.height = '45px'; cell.style.fontSize = '1.3rem'; cell.innerText = item;
+                const cell = document.createElement('div'); cell.className = 'mem-card'; cell.style.width = '50px'; cell.style.height = '50px'; cell.style.fontSize = '1.3rem'; cell.innerText = item;
                 cell.onclick = () => { if (item === hiddenNumber) { score += 40; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
-                grid.appendChild(cell);
+                container.appendChild(cell);
             });
         }
 
-        // --- INVASÃO DE EMOJIS ---
+        // --- 10. INVASÃO DE EMOJIS ---
         function playInvasao(stage) {
             let baseEmoji = ['🐱','🍏','🎈','🚗','⭐','🍕'][level % 6]; let intruderEmoji = ['🐶','🍎','🎁','🚲','🔥','🍔'][level % 6];
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px">ACHE O INTRUSO DA REUNIÃO!</p><div id="inv-grid" style="display:flex; flex-wrap:wrap; justify-content:center; max-width:450px; gap:10px;"></div>`;
-            const grid = stage.querySelector('#inv-grid'); let totalCount = 20 + (level * 4); let indexIntruder = Math.floor(Math.random() * totalCount);
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">ACHE O INTRUSO DA REUNIÃO!</p><div id="opts" style="gap:10px; max-width:400px;"></div>`;
+            const container = stage.querySelector('#opts'); let totalCount = Math.min(60, 20 + (level * 4)); let indexIntruder = Math.floor(Math.random() * totalCount);
             for(let i=0; i<totalCount; i++) {
-                const box = document.createElement('span'); box.style.fontSize = '2.5rem'; box.style.cursor = 'pointer'; box.style.padding = '5px'; box.innerText = (i === indexIntruder) ? intruderEmoji : baseEmoji;
+                const box = document.createElement('span'); box.style.fontSize = '2.3rem'; box.style.cursor = 'pointer'; box.innerText = (i === indexIntruder) ? intruderEmoji : baseEmoji;
                 box.onclick = () => { if(i === indexIntruder) { score += 45; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
-                grid.appendChild(box);
+                container.appendChild(box);
             }
         }
 
-        // --- SIMON INVERSO ---
+        // --- 11. SIMON ANTISSOCIAL ---
         function playSimonInverso(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">DECORE E REPITA NA <span style="color:var(--cyan)">ORDEM INVERSA</span>!</p><div class="color-grid"><div class="pad" style="background:var(--orange)"></div><div class="pad" style="background:var(--pink)"></div><div class="pad" style="background:var(--cyan)"></div><div class="pad" style="background:var(--purple)"></div></div>`;
-            internalSeq = Array.from({length: Math.min(8, 2 + Math.floor(level/2))}, () => Math.floor(Math.random() * 4)); playerSeq = [];
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">REPITA NA <span style="color:var(--cyan)">ORDEM INVERSA</span>!</p><div class="color-grid"><div class="pad" style="background:var(--orange)"></div><div class="pad" style="background:var(--pink)"></div><div class="pad" style="background:var(--cyan)"></div><div class="pad" style="background:var(--purple)"></div></div>`;
+            internalSeq = Array.from({length: Math.min(7, 2 + Math.floor(level/2))}, () => Math.floor(Math.random() * 4)); playerSeq = [];
             const pads = stage.querySelectorAll('.pad');
             async function showInverseSeq() {
                 gameActive = false;
-                for (let id of internalSeq) { await new Promise(r => setTimeout(r, 600)); pads[id].classList.add('active'); setTimeout(() => pads[id].classList.remove('active'), 400); }
+                for (let id of internalSeq) { await new Promise(r => setTimeout(r, 600)); if(pads[id]) pads[id].classList.add('active'); setTimeout(() => { if(pads[id]) pads[id].classList.remove('active') }, 400); }
                 gameActive = true;
             }
             setTimeout(showInverseSeq, 500);
@@ -391,40 +397,40 @@
                 pad.onclick = () => {
                     if(!gameActive) return; pad.classList.add('active'); setTimeout(() => pad.classList.remove('active'), 200); playerSeq.push(idx);
                     let targetIdx = internalSeq.length - playerSeq.length;
-                    if(playerSeq[playerSeq.length-1] !== internalSeq[targetIdx]) { alert("Errado!"); location.reload(); }
+                    if(playerSeq[playerSeq.length-1] !== internalSeq[targetIdx]) { alert("Ordem inversa incorreta!"); location.reload(); }
                     else if (playerSeq.length === internalSeq.length) { score += 60; level++; setTimeout(initLevel, 800); }
                 };
             });
         }
 
-        // --- BALANÇA MENTAL ---
+        // --- 12. BALANÇA MENTAL ---
         function playBalanca(stage) {
-            let n1 = Math.floor(Math.random()*10) + level, n2 = Math.floor(Math.random()*10);
-            let n3 = Math.floor(Math.random()*10) + level, n4 = Math.floor(Math.random()*10);
-            let leftVal = n1 + n2, rightVal = n3 + n4; if(leftVal === rightVal) leftVal += 2;
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:20px;">QUEM É MAIOR?</p><div style="display:flex; justify-content:center; gap:40px; width:100%;"><button id="side-l" class="stroop-btn" style="background:var(--purple-light); width:200px;">${n1} + ${n2}</button><button id="side-r" class="stroop-btn" style="background:var(--purple-light); width:200px;">${n3} + ${n4}</button></div>`;
-            stage.querySelector('#side-l').onclick = () => { if(leftVal > rightVal) { score += 30; level++; initLevel(); } else location.reload(); };
-            stage.querySelector('#side-r').onclick = () => { if(rightVal > leftVal) { score += 30; level++; initLevel(); } else location.reload(); };
+            let n1 = Math.floor(Math.random()*9) + level, n2 = Math.floor(Math.random()*9) + 2;
+            let n3 = Math.floor(Math.random()*9) + level, n4 = Math.floor(Math.random()*9) + 2;
+            let leftVal = n1 + n2, rightVal = n3 + n4; if(leftVal === rightVal) leftVal += 3;
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:20px; text-align:center;">QUEM É MAIOR?</p><div id="stroop-opts"><button id="side-l" class="stroop-btn" style="background:var(--purple-light);">${n1} + ${n2}</button><button id="side-r" class="stroop-btn" style="background:var(--purple-light);">${n3} + ${n4}</button></div>`;
+            stage.querySelector('#side-l').onclick = () => { if(leftVal > rightVal) { score += 30; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
+            stage.querySelector('#side-r').onclick = () => { if(rightVal > leftVal) { score += 30; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
         }
 
-        // --- PARE OU SIGA ---
+        // --- 13. PARE OU SIGA ---
         function playSinal(stage) {
             let config = [
                 { txt: 'CLIQUE', color: 'var(--green)', valid: true }, { txt: 'PARE', color: 'var(--red)', valid: false },
                 { txt: 'CLIQUE', color: 'var(--red)', valid: false }, { txt: 'PARE', color: 'var(--green)', valid: false }
             ];
             let activeConfig = config[Math.floor(Math.random() * config.length)];
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px; text-align:center;">SÓ CLIQUE SE FOR <span style="color:var(--green)">"CLIQUE" VERDE</span>!</p><h1 style="font-size:4.5rem; color:${activeConfig.color}; margin:30px 0; font-weight:900; background:rgba(0,0,0,0.2); padding:10px 40px; border-radius:15px;">${activeConfig.txt}</h1><div style="display:flex; gap:20px; width: 100%; max-width: 600px;"><button id="action-btn" class="stroop-btn" style="background:var(--blue)">CLICAR</button><button id="skip-btn" class="stroop-btn" style="background:var(--gray)">IGNORAR</button></div>`;
-            stage.querySelector('#action-btn').onclick = () => { if(activeConfig.valid) { score += 40; level++; initLevel(); } else location.reload(); };
-            stage.querySelector('#skip-btn').onclick = () => { if(!activeConfig.valid) { score += 40; level++; initLevel(); } else location.reload(); };
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px; text-align:center;">SÓ CLIQUE SE FOR <span style="color:var(--green)">"CLIQUE" VERDE</span>!</p><h1 style="font-size:4.5rem; color:${activeConfig.color}; margin:20px 0; font-weight:900; background:rgba(0,0,0,0.2); padding:10px 40px; border-radius:15px; text-align:center;">${activeConfig.txt}</h1><div id="stroop-opts"><button id="action-btn" class="stroop-btn" style="background:var(--blue)">CLICAR</button><button id="skip-btn" class="stroop-btn" style="background:var(--gray)">IGNORAR</button></div>`;
+            stage.querySelector('#action-btn').onclick = () => { if(activeConfig.valid) { score += 40; level++; initLevel(); } else { alert("Erro de impulso!"); location.reload(); } };
+            stage.querySelector('#skip-btn').onclick = () => { if(!activeConfig.valid) { score += 40; level++; initLevel(); } else { alert("Você devia ter clicado!"); location.reload(); } };
         }
 
-        // --- TIMING ENGINE ---
+        // --- ENGINE DO RELÓGIO ---
         function startTimer() {
             document.getElementById('timer').innerText = timeLeft;
             timerId = setInterval(() => {
                 timeLeft--; document.getElementById('timer').innerText = timeLeft;
-                if (timeLeft <= 0) { clearInterval(timerId); if(gameLoopInterval) clearInterval(gameLoopInterval); alert("O tempo esgotou! Score final: " + score); location.reload(); }
+                if (timeLeft <= 0) { clearAllMechanics(); alert("O tempo esgotou! Pontuação final: " + score); location.reload(); }
             }, 1000);
         }
     </script>
