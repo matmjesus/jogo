@@ -59,7 +59,7 @@
 
         .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; width: 100%; }
 
-        /* GRIDS DOS JOGOS REVISADOS */
+        /* GRIDS DOS JOGOS */
         .color-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 340px; width: 100%; }
         .pad { aspect-ratio: 1; border-radius: 20px; cursor: pointer; border: 5px solid rgba(0,0,0,0.2); width: 100%; }
         .pad.active { transform: scale(0.95); box-shadow: 0 0 50px white; filter: brightness(1.6); }
@@ -120,7 +120,6 @@
             <div class="game-card" onclick="loadGame('simon_inverso')" style="border-color: var(--yellow)"><span>🔴</span>SIMON ANTISSOCIAL</div>
             <div class="game-card" onclick="loadGame('balanca')" style="border-color: var(--blue)"><span>⚖️</span>BALANÇA MENTAL</div>
             <div class="game-card" onclick="loadGame('sinal')" style="border-color: var(--green)"><span>🛑</span>PARE OU SIGA</div>
-            
             <div class="game-card" onclick="loadGame('siga_luz')" style="border-color: var(--cyan)"><span>🟢</span>SIGA A LUZ</div>
             <div class="game-card" onclick="loadGame('rotacao')" style="border-color: var(--orange)"><span>🔄</span>ROTAÇÃO MENTAL</div>
             <div class="game-card" onclick="loadGame('proibida')" style="border-color: var(--red)"><span>🚫</span>LETRA PROIBIDA</div>
@@ -169,6 +168,7 @@
 
         function clearAllMechanics() {
             clearInterval(timerId);
+            timerId = null;
             if(gameLoopInterval) { clearInterval(gameLoopInterval); gameLoopInterval = null; }
             const stage = document.getElementById('stage');
             stage.innerHTML = '';
@@ -198,8 +198,6 @@
             else if (mode === 'simon_inverso') playSimonInverso(stage);
             else if (mode === 'balanca') playBalanca(stage);
             else if (mode === 'sinal') playSinal(stage);
-            
-            // Ativação dos novos infinitos jogos
             else if (mode === 'siga_luz') playSigaLuz(stage);
             else if (mode === 'rotacao') playRotacao(stage);
             else if (mode === 'proibida') playProibida(stage);
@@ -299,11 +297,10 @@
             }, 1000 + Math.random() * 2000);
         }
 
-        // --- 7. TESTE STROOP REFORMULADO (BLINDADO CONTRA ERROS) ---
+        // --- 7. TESTE STROOP ---
         function playStroop(stage) {
             let wordIdx = Math.floor(Math.random() * palette.length);
             let colorIdx;
-            // Força a cor e o texto a serem SEMPRE DIFERENTES
             do { colorIdx = Math.floor(Math.random() * palette.length); } while(colorIdx === wordIdx);
             
             let wordItem = palette[wordIdx];
@@ -426,11 +423,7 @@
             stage.querySelector('#skip-btn').onclick = () => { if(!activeConfig.valid) { score += 40; level++; initLevel(); } else { alert("Você devia ter clicado!"); location.reload(); } };
         }
 
-        // =========================================================================
-        // --- ➕ NOVOS 7 JOGOS (DO 14 AO 20) INFALÍVEIS CONTRA A DESATENÇÃO ---
-        // =========================================================================
-
-        // 14. SIGA A LUZ
+        // --- 14. SIGA A LUZ ---
         function playSigaLuz(stage) {
             stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px">CLIQUE RÁPIDO NO CÍRCULO VERDE ACESO!</p><div id="opts" style="max-width:360px;"></div>`;
             const container = stage.querySelector('#opts');
@@ -448,7 +441,7 @@
             }
         }
 
-        // 15. ROTAÇÃO MENTAL
+        // --- 15. ROTAÇÃO MENTAL ---
         function playRotacao(stage) {
             const dirs = [
                 { arrow: '⬆️', name: 'CIMA' }, { arrow: '⬇️', name: 'BAIXO' },
@@ -474,7 +467,7 @@
             });
         }
 
-        // 16. LETRA PROIBIDA
+        // --- 16. LETRA PROIBIDA ---
         function playProhibida(stage) {
             let alphabet = ['A','B','C','D','E','F','G','H','L','P','R','S','T'];
             let forbidden = 'X'; let currentLetter = Math.random() < 0.35 ? forbidden : alphabet[Math.floor(Math.random()*alphabet.length)];
@@ -491,11 +484,11 @@
                 if(currentLetter !== forbidden) { score += 30; level++; initLevel(); } else { alert("Você avançou na letra Proibida!"); location.reload(); }
             };
             stage.querySelector('#block').onclick = () => {
-                if(currentLetter === forbidden) { score += 50; level++; initLevel(); } else { alert("Você bloqueou uma letra segura! Perda de tempo."); location.reload(); }
+                if(currentLetter === forbidden) { score += 50; level++; initLevel(); } else { alert("Você bloqueou uma letra segura!"); location.reload(); }
             };
         }
 
-        // 17. SEQUÊNCIA BLOCOS
+        // --- 17. SEQUÊNCIA BLOCOS ---
         function playBlocos(stage) {
             stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px;">DECORE E REPITA OS BLOCOS ACESOS!</p><div class="color-grid" id="block-grid"><div class="pad" style="background:var(--gray)"></div><div class="pad" style="background:var(--gray)"></div><div class="pad" style="background:var(--gray)"></div><div class="pad" style="background:var(--gray)"></div></div>`;
             internalSeq = Array.from({length: Math.min(6, 2 + Math.floor(level/3))}, () => Math.floor(Math.random() * 4)); playerSeq = [];
@@ -517,7 +510,7 @@
             });
         }
 
-        // 18. CAÇADOR DE VOGAIS
+        // --- 18. CAÇADOR DE VOGAIS ---
         function playVogais(stage) {
             let vogals = ['A','E','I','O','U']; let consonants = ['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S'];
             let isVogal = Math.random() < 0.5;
@@ -535,7 +528,7 @@
             stage.querySelector('#btn-c').onclick = () => { if(!isVogal) { score += 30; level++; initLevel(); } else { alert("Você ignorou uma Vogal legítima!"); location.reload(); } };
         }
 
-        // 19. PAR OU ÍMPAR (PRESSÃO EXTREMA DE TEMPO)
+        // --- 19. PAR OU ÍMPAR ---
         function playParImpar(stage) {
             let num = Math.floor(Math.random() * 100) + 1; let isPar = (num % 2 === 0);
             stage.innerHTML = `
@@ -549,12 +542,12 @@
             stage.querySelector('#impar').onclick = () => { if(!isPar) { score += 35; level++; initLevel(); } else { alert("Errado! O número era PAR."); location.reload(); } };
         }
 
-        // 20. DESENHO IGUAL? (PATTERN MATCH)
+        // --- 20. DESENHO IGUAL? ---
         function playPadrao(stage) {
             let syms = ['💎','🔥','⭐','🍀','👾','⚡'];
-            let s1 = syms[Math.floor(Math.random()*syms.length)], s2 = syms[Math.floor(Math.random()*syms.length)];
-            let s3 = syms[Math.floor(Math.random()*syms.length)], s4 = Math.random() < 0.5 ? s3 : syms[Math.floor(Math.random()*syms.length)];
-            let areEqual = (s1 === s1 && s2 === s4); // Lógica de checagem do par de padrões lateral
+            let s1 = syms[Math.floor(Math.random()*syms.length)];
+            let s2 = syms[Math.floor(Math.random()*syms.length)];
+            let s4 = Math.random() < 0.5 ? s2 : syms[Math.floor(Math.random()*syms.length)];
             
             stage.innerHTML = `
                 <p style="font-weight:700; margin-bottom:15px;">AS DUAS DUPLAS SÃO IGUAIS?</p>
