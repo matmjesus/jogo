@@ -15,6 +15,10 @@
             --yellow: #f1c40f;
             --white: #ffffff;
             --pink: #ff6b6b;
+            /* NOVAS CORES ADICIONADAS */
+            --orange: #e67e22;
+            --cyan: #1abc9c;
+            --purple: #9b59b6;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
@@ -115,7 +119,7 @@
             .main-stage { padding: 20px 15px; flex: 1; }
             .btn-exit { position: absolute; top: 12px; right: 15px; padding: 6px 12px; font-size: 0.75rem; }
 
-            /* AJUSTES PARA BOTÕES DE OPÇÕES ULTRA GIGANTES NO MOBILE */
+            /* Ajustes de Opções no Mobile */
             #opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 100%; width: 92%; }
             .calc-btn { font-size: 2.2rem; padding: 25px 10px; border-bottom-width: 6px; min-width: 0; width: 100%; border-radius: 18px; }
 
@@ -302,7 +306,7 @@
             }, 1000 + Math.random() * 3000);
         }
 
-        // --- 🧠 PADRÃO MATRIZ (MEMÓRIA) ---
+        // --- 🔲 PADRÃO MATRIZ (MEMÓRIA) ---
         function playMatriz(stage) {
             stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">DECORE O PADRÃO ILUMINADO!</p>
                                <div id="matrix-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; width:100%; max-width:280px; aspect-ratio:1;"></div>`;
@@ -349,29 +353,60 @@
             }, 1200);
         }
 
-        // --- 🎯 TESTE DE STROOP (CONCENTRAÇÃO) ---
+        // --- 🎯 TESTE DE STROOP COM PALETA EXPANDIDA E ALEATÓRIA (CONCENTRAÇÃO) ---
         function playStroop(stage) {
-            const names = ['AZUL', 'VERMELHO', 'VERDE', 'AMARELO'];
-            const vars = ['var(--blue)', 'var(--red)', 'var(--green)', 'var(--yellow)'];
+            // Banco de dados completo com as 8 cores da paleta
+            const palette = [
+                { name: 'AZUL', color: 'var(--blue)' },
+                { name: 'VERMELHO', color: 'var(--red)' },
+                { name: 'VERDE', color: 'var(--green)' },
+                { name: 'AMARELO', color: 'var(--yellow)' },
+                { name: 'ROSA', color: 'var(--pink)' },
+                { name: 'LARANJA', color: 'var(--orange)' },
+                { name: 'CIANO', color: 'var(--cyan)' },
+                { name: 'ROXO', color: 'var(--purple)' }
+            ];
             
-            let textIdx = Math.floor(Math.random() * 4);
-            let colorIdx = Math.floor(Math.random() * 4);
+            // Sorteia aleatoriamente um item para o texto escrito e outro para a cor visual
+            let wordItem = palette[Math.floor(Math.random() * palette.length)];
+            let colorItem = palette[Math.floor(Math.random() * palette.length)];
             
             stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:5px;">QUAL A COR DO TEXTO?</p>
-                               <h1 style="font-size:3.8rem; color:${vars[colorIdx]}; text-shadow: 2px 4px 10px rgba(0,0,0,0.4); margin:15px 0;">${names[textIdx]}</h1>
+                               <h1 style="font-size:3.8rem; color:${colorItem.color}; text-shadow: 2px 4px 10px rgba(0,0,0,0.4); margin:15px 0;">${wordItem.name}</h1>
                                <div id="opts"></div>`;
             
+            // Garante que a opção correta estará entre as alternativas
+            let options = [colorItem];
+            
+            // Filtra as demais cores para selecionar as falsas
+            let remaining = palette.filter(item => item.color !== colorItem.color);
+            remaining.sort(() => Math.random() - 0.5);
+            
+            // Adiciona 3 opções falsas aleatórias para formar o painel de 4 botões
+            for(let i = 0; i < 3; i++) {
+                options.push(remaining[i]);
+            }
+            
+            // Embaralha as 4 alternativas finais para esconder a resposta certa
+            options.sort(() => Math.random() - 0.5);
+            
             const container = stage.querySelector('#opts');
-            for(let i=0; i<4; i++) {
+            options.forEach(opt => {
                 const btn = document.createElement('button');
-                btn.className = 'calc-btn'; btn.style.background = vars[i];
-                btn.style.border = '4px solid rgba(0,0,0,0.2)'; btn.style.height = '100px';
+                btn.className = 'calc-btn'; 
+                btn.style.background = opt.color;
+                btn.style.border = '4px solid rgba(0,0,0,0.2)'; 
+                btn.style.height = '100px';
                 btn.onclick = () => {
-                    if(i === colorIdx) { score += 30; level++; initLevel(); }
-                    else { alert("Incorreto! Você deve focar na cor, não na palavra."); location.reload(); }
+                    if(opt.color === colorItem.color) { 
+                        score += 30; level++; initLevel(); 
+                    } else { 
+                        alert("Incorreto! Você deve focar na cor, não na palavra."); 
+                        location.reload(); 
+                    }
                 };
                 container.appendChild(btn);
-            }
+            });
         }
 
         // --- ⚡ SETAS CONFLITANTES (ATENÇÃO SELETIVA) ---
