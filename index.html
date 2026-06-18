@@ -57,6 +57,16 @@
 
         .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; position: relative; overflow-y: auto; }
 
+        /* BOTÕES DE MARCAÇÃO EXPANDIDOS (CÁLCULO E NOVOS MODOS) */
+        #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 500px; }
+        .calc-btn {
+            background: white; color: #333; padding: 25px 45px; border-radius: 20px;
+            cursor: pointer; border: none; border-bottom: 8px solid #ccc; font-weight: 900;
+            font-size: 2.2rem; text-align: center; min-width: 140px;
+        }
+        .calc-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); }
+        .calc-btn:active { transform: translateY(3px); border-bottom-width: 2px; }
+
         /* ESTILO ESPECÍFICO: GÊNIO DAS CORES */
         .color-grid { display: grid; grid-template-columns: repeat(2, 180px); gap: 20px; }
         .pad {
@@ -99,20 +109,23 @@
             .sidebar > div:first-child { text-align: left !important; }
             .sidebar h1 { font-size: 1.3rem; }
             .sidebar p { margin: 2px 0 0 0; font-size: 0.85rem; }
-            .sidebar > div:last-child { display: none; } /* Oculta o badge "Rodada Ativa" no mobile */
+            .sidebar > div:last-child { display: none; }
             
             .timer-circle { width: 65px; height: 65px; font-size: 1.5rem; border-width: 4px; }
             .main-stage { padding: 20px 15px; flex: 1; }
             .btn-exit { position: absolute; top: 12px; right: 15px; padding: 6px 12px; font-size: 0.75rem; }
 
-            /* Dimensionamento responsivo dos Mini-games */
+            /* Ajustes Específicos para Alternativas Maiores */
+            #opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 320px; }
+            .calc-btn { font-size: 1.8rem; padding: 20px 10px; border-bottom-width: 5px; min-width: 0; width: 100%; }
+
+            /* Dimensionamento responsivo de Elementos Visuais */
             .color-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px !important; width: 100%; max-width: 280px; }
             .pad { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 15px !important; }
-            
             .mem-card { width: 65px !important; height: 65px !important; font-size: 1.5rem !important; border-radius: 10px !important; }
             
-            /* Forçar textos dinâmicos injetados por JS a escalarem */
             #stage h1 { font-size: 2.2rem !important; text-align: center; }
+            #stage p { font-size: 1rem !important; text-align: center; }
             #stage span { font-size: 1.6rem !important; padding: 6px !important; }
         }
     </style>
@@ -128,6 +141,10 @@
             <div class="game-card" onclick="loadGame('foco')" style="border-color: var(--green)"><span>🎯</span>FOCO SELETIVO</div>
             <div class="game-card" onclick="loadGame('ordem')" style="border-color: var(--pink)"><span>🔡</span>ORDEM CRESCENTE</div>
             <div class="game-card" onclick="loadGame('reacao')" style="border-color: #333"><span>🚀</span>VELOCIDADE LUZ</div>
+            <!-- NOVOS JOGOS ADICIONADOS -->
+            <div class="game-card" onclick="loadGame('matriz')" style="border-color: var(--yellow)"><span>🔲</span>PADRÃO MATRIZ</div>
+            <div class="game-card" onclick="loadGame('stroop')" style="border-color: var(--pink)"><span>🎨</span>TESTE STROOP</div>
+            <div class="game-card" onclick="loadGame('setas')" style="border-color: var(--blue)"><span>↔️</span>SETAS CONFLITANTES</div>
         </div>
     </div>
 
@@ -174,6 +191,9 @@
             else if (mode === 'foco') playFoco(stage);
             else if (mode === 'ordem') playOrdem(stage);
             else if (mode === 'reacao') playReacao(stage);
+            else if (mode === 'matriz') playMatriz(stage);
+            else if (mode === 'stroop') playStroop(stage);
+            else if (mode === 'setas') playSetas(stage);
 
             startTimer();
         }
@@ -206,7 +226,6 @@
         function handleColorClick(el, id) {
             if (!gameActive) return;
             
-            // Efeito visual solicitado
             el.classList.add('active');
             const b = el.querySelector('.badge-click');
             b.style.display = 'block';
@@ -245,11 +264,12 @@
         function playCalculo(stage) {
             let a = Math.floor(Math.random() * (10 * level)), b = Math.floor(Math.random() * (10 * level));
             let res = a + b;
-            stage.innerHTML = `<h1 style="font-size:4rem">${a} + ${b} = ?</h1><div id="opts"></div>`;
+            stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:20px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
+            const optsContainer = stage.querySelector('#opts');
             [res, res+2, res-3, res+5].sort(() => Math.random()-0.5).forEach(o => {
-                const btn = document.createElement('button'); btn.className = 'game-card'; btn.style.margin = '10px'; btn.innerText = o;
-                btn.onclick = () => { if(o === res) { score += 30; level++; initLevel(); } else location.reload(); };
-                stage.querySelector('#opts').appendChild(btn);
+                const btn = document.createElement('button'); btn.className = 'calc-btn'; btn.innerText = o;
+                btn.onclick = () => { if(o === res) { score += 30; level++; initLevel(); } else { alert("Errado!"); location.reload(); } };
+                optsContainer.appendChild(btn);
             });
         }
 
@@ -278,9 +298,98 @@
         function playReacao(stage) {
             stage.innerHTML = '<h1>AGUARDE O VERDE...</h1>';
             setTimeout(() => {
-                stage.innerHTML = '<div id="target" style="width:250px;height:250px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer"><h1>CLIQUE!</h1></div>';
+                stage.innerHTML = '<div id="target" style="width:230px;height:230px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer"><h1>CLIQUE!</h1></div>';
                 stage.querySelector('#target').onclick = () => { score += 100; level++; initLevel(); };
             }, 1000 + Math.random() * 3000);
+        }
+
+        // --- 🧠 NOVO JOGO: PADRÃO MATRIZ (MEMÓRIA) ---
+        function playMatriz(stage) {
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:10px;">DECORE O PADRÃO ILUMINADO!</p>
+                               <div id="matrix-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; width:100%; max-width:280px; aspect-ratio:1;"></div>`;
+            const grid = stage.querySelector('#matrix-grid');
+            let size = 9; let activeTiles = [];
+            let count = 2 + Math.min(level, 4);
+            
+            while(activeTiles.length < count) {
+                let r = Math.floor(Math.random() * size);
+                if(!activeTiles.includes(r)) activeTiles.push(r);
+            }
+            
+            let playerTiles = []; gameActive = false;
+            
+            for(let i=0; i<size; i++) {
+                const tile = document.createElement('div');
+                tile.style.background = 'rgba(255,255,255,0.15)';
+                tile.style.borderRadius = '15px';
+                tile.style.cursor = 'pointer';
+                tile.dataset.id = i;
+                grid.appendChild(tile);
+                if(activeTiles.includes(i)) tile.style.background = 'var(--yellow)';
+            }
+            
+            setTimeout(() => {
+                grid.querySelectorAll('div').forEach(t => t.style.background = 'rgba(255,255,255,0.15)');
+                gameActive = true;
+                grid.querySelectorAll('div').forEach(tile => {
+                    tile.onclick = () => {
+                        if(!gameActive) return;
+                        let id = parseInt(tile.dataset.id);
+                        if(activeTiles.includes(id)) {
+                            if(!playerTiles.includes(id)) {
+                                playerTiles.push(id);
+                                tile.style.background = 'var(--green)';
+                                if(playerTiles.length === activeTiles.length) { score += 40; level++; setTimeout(initLevel, 600); }
+                            }
+                        } else {
+                            tile.style.background = 'var(--red)'; gameActive = false;
+                            setTimeout(() => { alert("Padrão Incorreto!"); location.reload(); }, 200);
+                        }
+                    };
+                });
+            }, 1200);
+        }
+
+        // --- 🎯 NOVO JOGO: TESTE DE STROOP (CONCENTRAÇÃO) ---
+        function playStroop(stage) {
+            const names = ['AZUL', 'VERMELHO', 'VERDE', 'AMARELO'];
+            const vars = ['var(--blue)', 'var(--red)', 'var(--green)', 'var(--yellow)'];
+            
+            let textIdx = Math.floor(Math.random() * 4);
+            let colorIdx = Math.floor(Math.random() * 4);
+            
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:5px;">QUAL A COR DO TEXTO?</p>
+                               <h1 style="font-size:3.8rem; color:${vars[colorIdx]}; text-shadow: 2px 4px 10px rgba(0,0,0,0.4); margin:15px 0;">${names[textIdx]}</h1>
+                               <div id="opts"></div>`;
+            
+            const container = stage.querySelector('#opts');
+            for(let i=0; i<4; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'calc-btn'; btn.style.background = vars[i];
+                btn.style.border = '4px solid rgba(0,0,0,0.2)'; btn.style.height = '75px';
+                btn.onclick = () => {
+                    if(i === colorIdx) { score += 30; level++; initLevel(); }
+                    else { alert("Incorreto! Você deve focar na cor, não na palavra."); location.reload(); }
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        // --- ⚡ NOVO JOGO: SETAS CONFLITANTES (ATENÇÃO SELETIVA) ---
+        function playSetas(stage) {
+            let isRight = Math.random() > 0.5;
+            let isCongruent = Math.random() > 0.5;
+            let arrowStr = isRight ? (isCongruent ? '>>>>>' : '<<><<') : (isCongruent ? '<<<<<' : '>><>>');
+            
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:5px;">FOQUE APENAS NA SETA DO CENTRO!</p>
+                               <h1 style="font-size:4rem; letter-spacing:8px; margin:20px 0; color:var(--yellow); text-shadow:0 5px 15px rgba(0,0,0,0.3);">${arrowStr}</h1>
+                               <div id="opts" style="max-width:340px;">
+                                   <button id="b-left" class="calc-btn" style="width:100%;">◀</button>
+                                   <button id="b-right" class="calc-btn" style="width:100%;">▶</button>
+                               </div>`;
+                               
+            stage.querySelector('#b-left').onclick = () => { if(!isRight) { score += 35; level++; initLevel(); } else { alert("Direção errada!"); location.reload(); } };
+            stage.querySelector('#b-right').onclick = () => { if(isRight) { score += 35; level++; initLevel(); } else { alert("Direção errada!"); location.reload(); } };
         }
 
         function startTimer() {
