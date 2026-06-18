@@ -558,4 +558,27 @@
             
             stage.innerHTML = `
                 <p style="font-weight:700; margin-bottom:15px;">AS DUAS DUPLAS SÃO IGUAIS?</p>
-                <div style="display:flex; gap:50px; font-size:3.5rem; margin-bottom:25px; background:rgba
+                <div style="display:flex; gap:50px; font-size:3.5rem; margin-bottom:25px; background:rgba(0,0,0,0.2); padding:15px; border-radius:15px;">
+                    <div>${s1}${s2}</div>
+                    <div>${s1}${s4}</div>
+                </div>
+                <div id="stroop-opts">
+                    <button id="eq" class="stroop-btn" style="background:var(--green)">SIM, IGUAIS</button>
+                    <button id="diff" class="stroop-btn" style="background:var(--red)">NÃO, DIFERENTES</button>
+                </div>`;
+                
+            stage.querySelector('#eq').onclick = () => { if(s2 === s4) { score += 40; level++; initLevel(); } else { alert("Erro de conferência visual! Eram diferentes."); location.reload(); } };
+            stage.querySelector('#diff').onclick = () => { if(s2 !== s4) { score += 40; level++; initLevel(); } else { alert("Erro! Elas eram perfeitamente iguais."); location.reload(); } };
+        }
+
+        // --- ENGINE DO RELÓGIO ---
+        function startTimer() {
+            document.getElementById('timer').innerText = timeLeft;
+            timerId = setInterval(() => {
+                timeLeft--; document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) { clearAllMechanics(); alert("O tempo esgotou! Pontuação acumulada: " + score); location.reload(); }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
