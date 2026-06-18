@@ -65,14 +65,14 @@
         }
         .pad.active { transform: scale(0.95); box-shadow: 0 0 60px white; filter: brightness(1.6); }
         
-        /* BOTÕES GERAIS */
-        #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; width: 100%; max-width: 650px; }
+        /* BOTÕES GERAIS E STROOP OTIMIZADO */
+        #opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%; max-width: 700px; }
         .stroop-btn {
-            padding: 20px 40px; border-radius: 15px; border: none; font-family: 'Montserrat', sans-serif;
-            font-size: 1.6rem; font-weight: 900; color: white; cursor: pointer; text-shadow: 1px 2px 4px rgba(0,0,0,0.5);
-            box-shadow: 0 6px 0 rgba(0,0,0,0.3); min-width: 160px; text-align: center;
+            padding: 25px 20px; border-radius: 18px; border: none; font-family: 'Montserrat', sans-serif;
+            font-size: 2rem; font-weight: 900; color: white; cursor: pointer; text-shadow: 2px 3px 6px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.3); text-align: center; width: 100%;
         }
-        .stroop-btn:hover { transform: translateY(-3px); box-shadow: 0 9px 0 rgba(0,0,0,0.3); }
+        .stroop-btn:hover { transform: translateY(-3px); box-shadow: 0 11px 0 rgba(0,0,0,0.3); }
         .stroop-btn:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,0.3); }
 
         .timer-circle { width: 110px; height: 110px; border-radius: 50%; border: 6px solid white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.1); }
@@ -107,7 +107,9 @@
             .timer-circle { width: 50px; height: 50px; font-size: 1.2rem; border-width: 3px; }
             .main-stage { padding: 10px; }
             .btn-exit { position: absolute; top: 12px; right: 12px; padding: 4px 8px; font-size: 0.65rem; }
-            .stroop-btn { font-size: 1.1rem; padding: 12px 15px; min-width: 120px; }
+            
+            #opts { gap: 12px; width: 95%; }
+            .stroop-btn { font-size: 1.4rem; padding: 18px 10px; border-radius: 14px; }
             .color-grid { grid-template-columns: repeat(2, 120px); gap: 10px; }
             .pad { width: 120px; height: 120px; }
         }
@@ -118,7 +120,6 @@
     <div id="home-screen">
         <div class="logo">🧠 ACADEMIA DA ATENÇÃO ⚡</div>
         <div class="menu-grid">
-            <!-- JOGOS ANTIGOS REVISADOS -->
             <div class="game-card" onclick="loadGame('cores')" style="border-color: var(--yellow)"><span>✨</span>GÊNIO DAS CORES</div>
             <div class="game-card" onclick="loadGame('memoria')" style="border-color: var(--blue)"><span>🔢</span>PARES NUMÉRICOS</div>
             <div class="game-card" onclick="loadGame('calculo')" style="border-color: var(--red)"><span>➕</span>CÁLCULO RÁPIDO</div>
@@ -126,8 +127,6 @@
             <div class="game-card" onclick="loadGame('ordem')" style="border-color: var(--pink)"><span>🔡</span>ORDEM CRESCENTE</div>
             <div class="game-card" onclick="loadGame('reacao')" style="border-color: #333"><span>🚀</span>VELOCIDADE LUZ</div>
             <div class="game-card" onclick="loadGame('stroop')" style="border-color: var(--orange)"><span>🎨</span>TESTE STROOP</div>
-            
-            <!-- 6 NOVOS JOGOS DE ATENÇÃO -->
             <div class="game-card" onclick="loadGame('alvo')" style="border-color: var(--pink)"><span>🎈</span>TIRO AO ALVO SÚBITO</div>
             <div class="game-card" onclick="loadGame('procurar')" style="border-color: var(--cyan)"><span>🔎</span>CADÊ O NÚMERO?</div>
             <div class="game-card" onclick="loadGame('invasao')" style="border-color: var(--purple)"><span>🛸</span>INVASÃO DE EMOJIS</div>
@@ -168,12 +167,12 @@
         }
 
         function initLevel() {
-            gameActive = true; timeLeft = m == 'alvo' ? 20 : 15;
+            gameActive = true; timeLeft = mode == 'alvo' ? 20 : 15;
             document.getElementById('lvl').innerText = level;
             document.getElementById('scr').innerText = score;
             const stage = document.getElementById('stage');
             stage.innerHTML = '';
-            stage.style = ''; // Limpa estilos dinâmicos residuais
+            stage.style = ''; 
             clearInterval(timerId);
             if(gameLoopInterval) clearInterval(gameLoopInterval);
 
@@ -184,8 +183,6 @@
             else if (mode === 'ordem') playOrdem(stage);
             else if (mode === 'reacao') playReacao(stage);
             else if (mode === 'stroop') playStroop(stage);
-            
-            // Ativação dos novos métodos
             else if (mode === 'alvo') playAlvo(stage);
             else if (mode === 'procurar') playProcurar(stage);
             else if (mode === 'invasao') playInvasao(stage);
@@ -196,7 +193,7 @@
             startTimer();
         }
 
-        // --- JOGOS ORIGINAIS (OTIMIZADOS) ---
+        // --- GÊNIO DAS CORES ---
         function playCores(stage) {
             stage.innerHTML = `<div class="color-grid"><div class="pad" style="background:var(--blue)" onclick="handleColorClick(this,0)"></div><div class="pad" style="background:var(--red)" onclick="handleColorClick(this,1)"></div><div class="pad" style="background:var(--green)" onclick="handleColorClick(this,2)"></div><div class="pad" style="background:var(--yellow)" onclick="handleColorClick(this,3)"></div></div>`;
             internalSeq = Array.from({length: level + 1}, () => Math.floor(Math.random() * 4)); playerSeq = []; runSequence();
@@ -212,6 +209,7 @@
             else if (playerSeq.length === internalSeq.length) { score += 50; level++; setTimeout(initLevel, 600); }
         }
 
+        // --- PARES NUMÉRICOS ---
         function playMemoria(stage) {
             let pairs = Math.min(20, 1 + level); let totalCards = pairs * 2;
             let deck = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5); let flipped = [];
@@ -237,6 +235,7 @@
             });
         }
 
+        // --- CÁLCULO RÁPIDO ---
         function playCalculo(stage) {
             let a = Math.floor(Math.random() * (10 * level)), b = Math.floor(Math.random() * (10 * level)); let res = a + b;
             stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:20px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
@@ -247,6 +246,7 @@
             });
         }
 
+        // --- FOCO SELETIVO ---
         function playFoco(stage) {
             let chars = ['M', 'W', 'N']; let main = chars[level % 3], intruder = 'H';
             stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.justifyContent = 'center'; stage.style.maxWidth = '500px';
@@ -258,6 +258,7 @@
             }
         }
 
+        // --- ORDEM CRESCENTE ---
         function playOrdem(stage) {
             let nums = Array.from({length: Math.min(12, 3+level)}, () => Math.floor(Math.random()*100)); let sorted = [...nums].sort((a,b) => a-b); let idx = 0;
             stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.gap = '12px';
@@ -268,6 +269,7 @@
             });
         }
 
+        // --- VELOCIDADE LUZ ---
         function playReacao(stage) {
             stage.innerHTML = '<h1>AGUARDE O VERDE...</h1>';
             setTimeout(() => {
@@ -277,6 +279,7 @@
             }, 1200 + Math.random() * 2500);
         }
 
+        // --- 🎨 TESTE STROOP REFORMULADO (MÁXIMA INTERFERÊNCIA E BOTÕES GRANDES) ---
         function playStroop(stage) {
             const palette = [
                 { name: 'AZUL', color: 'var(--blue)' }, { name: 'VERMELHO', color: 'var(--red)' },
@@ -284,57 +287,60 @@
                 { name: 'ROSA', color: 'var(--pink)' }, { name: 'LARANJA', color: 'var(--orange)' },
                 { name: 'CIANO', color: 'var(--cyan)' }, { name: 'ROXO', color: 'var(--purple)' }
             ];
+            
             let wordItem = palette[Math.floor(Math.random() * palette.length)];
             let colorItem = palette[Math.floor(Math.random() * palette.length)];
-            stage.innerHTML = `<p style="font-size:1.2rem; font-weight:700;">QUAL A COR DO TEXTO?</p><h1 style="font-size:4rem; color:${colorItem.color}; text-shadow: 2px 4px 12px rgba(0,0,0,0.6); margin:15px 0; font-weight:900;">${wordItem.name}</h1><div id="opts"></div>`;
-            let options = [colorItem]; let remaining = palette.filter(item => item.color !== colorItem.color).sort(() => Math.random() - 0.5);
+            
+            stage.innerHTML = `
+                <p style="font-size:1.3rem; font-weight:700; margin-bottom:5px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">QUAL A COR DO TEXTO?</p>
+                <h1 style="font-size:4.5rem; color:${colorItem.color}; text-shadow: 3px 5px 15px rgba(0,0,0,0.7); margin:15px 0; font-weight:900; letter-spacing:2px;">${wordItem.name}</h1>
+                <div id="opts"></div>`;
+            
+            let options = [colorItem]; 
+            let remaining = palette.filter(item => item.color !== colorItem.color).sort(() => Math.random() - 0.5);
+            
             for(let i = 0; i < 3; i++) options.push(remaining[i]);
-            options.sort(() => Math.random() - 0.5).forEach(opt => {
-                const btn = document.createElement('button'); btn.className = 'stroop-btn'; btn.style.background = opt.color; btn.innerText = opt.name;
-                btn.onclick = () => { if(opt.color === colorItem.color) { score += 35; level++; initLevel(); } else { alert("Foque na COR, não na palavra!"); location.reload(); } };
-                stage.querySelector('#opts').appendChild(btn);
+            options.sort(() => Math.random() - 0.5);
+            
+            const container = stage.querySelector('#opts');
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'stroop-btn'; 
+                
+                // Embaralha uma cor de fundo para o próprio botão para gerar distração visual
+                let randomBgColor = palette[Math.floor(Math.random() * palette.length)].color;
+                btn.style.background = randomBgColor;
+                
+                btn.innerText = opt.name;
+                btn.onclick = () => {
+                    if(opt.color === colorItem.color) { 
+                        score += 35; level++; initLevel(); 
+                    } else { 
+                        alert("Incorreto! Responda focado apenas na COR do texto principal lá de cima."); 
+                        location.reload(); 
+                    }
+                };
+                container.appendChild(btn);
             });
         }
 
-
-        // =========================================================================
-        // --- 🚀 NOVOS 6 JOGOS CRIATIVOS DE TREINAMENTO DE ATENÇÃO ---
-        // =========================================================================
-
-        // 1. TIRO AO ALVO SÚBITO
+        // --- TIRO AO ALVO SÚBITO ---
         function playAlvo(stage) {
             stage.innerHTML = `<p style="position:absolute; top:5px; font-weight:700;">NÍVEL ${level}: CLIQUE NAS BOLAS COLORIDAS! FUJA DA VERMELHA (❌)!</p>`;
-            let targetsHit = 0;
-            let targetGoal = 3 + level;
-
+            let targetsHit = 0; let targetGoal = 3 + level;
             function spawnBubble() {
                 if(mode !== 'alvo' || targetsHit >= targetGoal) return;
-                const bubble = document.createElement('div');
-                bubble.className = 'target-bubble';
-                
-                let isBomb = Math.random() < 0.25; // 25% de chance de ser bomba
-                let size = Math.max(50, 100 - (level * 4));
-                
-                bubble.style.width = size + 'px';
-                bubble.style.height = size + 'px';
+                const bubble = document.createElement('div'); bubble.className = 'target-bubble';
+                let isBomb = Math.random() < 0.25; let size = Math.max(50, 100 - (level * 4));
+                bubble.style.width = size + 'px'; bubble.style.height = size + 'px';
                 bubble.style.top = Math.random() * (stage.clientHeight - size - 40) + 30 + 'px';
                 bubble.style.left = Math.random() * (stage.clientWidth - size - 20) + 10 + 'px';
-                
                 if (isBomb) {
-                    bubble.style.background = 'var(--red)';
-                    bubble.innerText = '❌';
+                    bubble.style.background = 'var(--red)'; bubble.innerText = '❌';
                     bubble.onclick = () => { alert("Você explodiu a bomba! Fim de jogo."); location.reload(); };
                 } else {
-                    bubble.style.background = ['var(--blue)', 'var(--green)', 'var(--cyan)', 'var(--purple)'][Math.floor(Math.random()*4)];
-                    bubble.innerText = '🎯';
-                    bubble.onclick = (e) => {
-                        e.stopPropagation();
-                        bubble.remove();
-                        targetsHit++;
-                        score += 15;
-                        document.getElementById('scr').innerText = score;
-                        if(targetsHit >= targetGoal) { level++; initLevel(); }
-                    };
+                    bubble.style.background = ['var(--blue)', 'var(--green)', 'var(--cyan)', 'var(--purple)'][Math.floor(Math.random()*4)]; bubble.innerText = '🎯';
+                    bubble.onclick = (e) => { e.stopPropagation(); bubble.remove(); targetsHit++; score += 15; document.getElementById('scr').innerText = score; if(targetsHit >= targetGoal) { level++; initLevel(); } };
                 }
                 stage.appendChild(bubble);
                 setTimeout(() => { if(bubble) bubble.remove(); }, Math.max(800, 2000 - (level * 100)));
@@ -342,162 +348,83 @@
             gameLoopInterval = setInterval(spawnBubble, Math.max(400, 1000 - (level * 50)));
         }
 
-        // 2. CADÊ O NÚMERO RÁPIDO
+        // --- CADÊ O NÚMERO RÁPIDO ---
         function playProcurar(stage) {
             stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px">ENCONTRE O ÚNICO NÚMERO ESCONDIDO!</p><div id="find-grid" style="display:grid; grid-template-columns: repeat(6, 1fr); gap:10px;"></div>`;
             const grid = stage.querySelector('#find-grid');
             let pool = ['X','Y','Z','W','K','P','H','A','#','$','&','@','?','*','%'];
             let hiddenNumber = Math.floor(Math.random() * 10).toString();
-            let totalCells = 24 + (level * 6);
-            if (totalCells > 54) totalCells = 54;
-            
+            let totalCells = Math.min(54, 24 + (level * 6));
             let items = Array.from({length: totalCells - 1}, () => pool[Math.floor(Math.random()*pool.length)]);
-            items.push(hiddenNumber);
-            items.sort(() => Math.random() - 0.5);
-
+            items.push(hiddenNumber); items.sort(() => Math.random() - 0.5);
             items.forEach(item => {
-                const cell = document.createElement('div');
-                cell.className = 'mem-card';
-                cell.style.width = '45px'; cell.style.height = '45px'; cell.style.fontSize = '1.3rem';
-                cell.innerText = item;
-                cell.onclick = () => {
-                    if (item === hiddenNumber) { score += 40; level++; initLevel(); }
-                    else { alert("Incorreto! Aquilo era um símbolo."); location.reload(); }
-                };
+                const cell = document.createElement('div'); cell.className = 'mem-card'; cell.style.width = '45px'; cell.style.height = '45px'; cell.style.fontSize = '1.3rem'; cell.innerText = item;
+                cell.onclick = () => { if (item === hiddenNumber) { score += 40; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
                 grid.appendChild(cell);
             });
         }
 
-        // 3. INVASÃO DE EMOJIS (ATENÇÃO SELETIVA)
+        // --- INVASÃO DE EMOJIS ---
         function playInvasao(stage) {
-            let baseEmoji = ['🐱','🍏','🎈','🚗','⭐','🍕'][level % 6];
-            let intruderEmoji = ['🐶','🍎','🎁','🚲','🔥','🍔'][level % 6];
-            
+            let baseEmoji = ['🐱','🍏','🎈','🚗','⭐','🍕'][level % 6]; let intruderEmoji = ['🐶','🍎','🎁','🚲','🔥','🍔'][level % 6];
             stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px">ACHE O INTRUSO DA REUNIÃO!</p><div id="inv-grid" style="display:flex; flex-wrap:wrap; justify-content:center; max-width:450px; gap:10px;"></div>`;
-            const grid = stage.querySelector('#inv-grid');
-            
-            let totalCount = 20 + (level * 4);
-            let indexIntruder = Math.floor(Math.random() * totalCount);
-
+            const grid = stage.querySelector('#inv-grid'); let totalCount = 20 + (level * 4); let indexIntruder = Math.floor(Math.random() * totalCount);
             for(let i=0; i<totalCount; i++) {
-                const box = document.createElement('span');
-                box.style.fontSize = '2.5rem'; box.style.cursor = 'pointer'; box.style.padding = '5px';
-                box.innerText = (i === indexIntruder) ? intruderEmoji : baseEmoji;
-                box.onclick = () => {
-                    if(i === indexIntruder) { score += 45; level++; initLevel(); }
-                    else { alert("Incorreto! Esse era o emoji comum."); location.reload(); }
-                };
+                const box = document.createElement('span'); box.style.fontSize = '2.5rem'; box.style.cursor = 'pointer'; box.style.padding = '5px'; box.innerText = (i === indexIntruder) ? intruderEmoji : baseEmoji;
+                box.onclick = () => { if(i === indexIntruder) { score += 45; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
                 grid.appendChild(box);
             }
         }
 
-        // 4. SIMON INVERSO (MEMÓRIA DE TRABALHO EXTREMA)
+        // --- SIMON INVERSO ---
         function playSimonInverso(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">DECORE E REPITA NA <span style="color:var(--cyan)">ORDEM INVERSA</span> (DE TRÁS PARA FRENTE)!</p><div class="color-grid"><div class="pad" style="background:var(--orange)"></div><div class="pad" style="background:var(--pink)"></div><div class="pad" style="background:var(--cyan)"></div><div class="pad" style="background:var(--purple)"></div></div>`;
-            
-            internalSeq = Array.from({length: Math.min(8, 2 + Math.floor(level/2))}, () => Math.floor(Math.random() * 4));
-            playerSeq = [];
-            
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px; text-align:center;">DECORE E REPITA NA <span style="color:var(--cyan)">ORDEM INVERSA</span>!</p><div class="color-grid"><div class="pad" style="background:var(--orange)"></div><div class="pad" style="background:var(--pink)"></div><div class="pad" style="background:var(--cyan)"></div><div class="pad" style="background:var(--purple)"></div></div>`;
+            internalSeq = Array.from({length: Math.min(8, 2 + Math.floor(level/2))}, () => Math.floor(Math.random() * 4)); playerSeq = [];
             const pads = stage.querySelectorAll('.pad');
-            
             async function showInverseSeq() {
                 gameActive = false;
-                for (let id of internalSeq) {
-                    await new Promise(r => setTimeout(r, 600));
-                    pads[id].classList.add('active');
-                    setTimeout(() => pads[id].classList.remove('active'), 400);
-                }
+                for (let id of internalSeq) { await new Promise(r => setTimeout(r, 600)); pads[id].classList.add('active'); setTimeout(() => pads[id].classList.remove('active'), 400); }
                 gameActive = true;
             }
-
             setTimeout(showInverseSeq, 500);
-
             pads.forEach((pad, idx) => {
                 pad.onclick = () => {
-                    if(!gameActive) return;
-                    pad.classList.add('active'); setTimeout(() => pad.classList.remove('active'), 200);
-                    
-                    playerSeq.push(idx);
-                    // Checagem invertida
+                    if(!gameActive) return; pad.classList.add('active'); setTimeout(() => pad.classList.remove('active'), 200); playerSeq.push(idx);
                     let targetIdx = internalSeq.length - playerSeq.length;
-                    if(playerSeq[playerSeq.length-1] !== internalSeq[targetIdx]) {
-                        alert("Errado! Você esqueceu de inverter ou errou a cor."); location.reload();
-                    } else if (playerSeq.length === internalSeq.length) {
-                        score += 60; level++; setTimeout(initLevel, 800);
-                    }
+                    if(playerSeq[playerSeq.length-1] !== internalSeq[targetIdx]) { alert("Errado!"); location.reload(); }
+                    else if (playerSeq.length === internalSeq.length) { score += 60; level++; setTimeout(initLevel, 800); }
                 };
             });
         }
 
-        // 5. BALANÇA MENTAL (ATENÇÃO DIVIDIDA)
+        // --- BALANÇA MENTAL ---
         function playBalanca(stage) {
             let n1 = Math.floor(Math.random()*10) + level, n2 = Math.floor(Math.random()*10);
             let n3 = Math.floor(Math.random()*10) + level, n4 = Math.floor(Math.random()*10);
-            let leftVal = n1 + n2;
-            let rightVal = n3 + n4;
-            if(leftVal === rightVal) { leftVal += 2; } // Evita empates básicos
-
-            stage.innerHTML = `
-                <p style="font-weight:700; margin-bottom:20px;">QUEM É MAIOR? CLIQUE NO LADO CORRETO!</p>
-                <div style="display:flex; justify-content:center; gap:40px; width:100%;">
-                    <button id="side-l" class="stroop-btn" style="background:var(--purple-light); font-size:2rem; width:180px;">${n1} + ${n2}</button>
-                    <button id="side-r" class="stroop-btn" style="background:var(--purple-light); font-size:2rem; width:180px;">${n3} + ${n4}</button>
-                </div>
-            `;
-
-            stage.querySelector('#side-l').onclick = () => {
-                if(leftVal > rightVal) { score += 30; level++; initLevel(); }
-                else { alert(`Incorreto! ${leftVal} não é maior que ${rightVal}`); location.reload(); }
-            };
-            stage.querySelector('#side-r').onclick = () => {
-                if(rightVal > leftVal) { score += 30; level++; initLevel(); }
-                else { alert(`Incorreto! ${rightVal} não é maior que ${leftVal}`); location.reload(); }
-            };
+            let leftVal = n1 + n2, rightVal = n3 + n4; if(leftVal === rightVal) leftVal += 2;
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:20px;">QUEM É MAIOR?</p><div style="display:flex; justify-content:center; gap:40px; width:100%;"><button id="side-l" class="stroop-btn" style="background:var(--purple-light); width:200px;">${n1} + ${n2}</button><button id="side-r" class="stroop-btn" style="background:var(--purple-light); width:200px;">${n3} + ${n4}</button></div>`;
+            stage.querySelector('#side-l').onclick = () => { if(leftVal > rightVal) { score += 30; level++; initLevel(); } else location.reload(); };
+            stage.querySelector('#side-r').onclick = () => { if(rightVal > leftVal) { score += 30; level++; initLevel(); } else location.reload(); };
         }
 
-        // 6. PARE OU SIGA (CONTROLE DE IMPULSO/INIBITÓRIO)
+        // --- PARE OU SIGA ---
         function playSinal(stage) {
             let config = [
-                { txt: 'CLIQUE', color: 'var(--green)', valid: true },
-                { txt: 'PARE', color: 'var(--red)', valid: false },
-                { txt: 'CLIQUE', color: 'var(--red)', valid: false },
-                { txt: 'PARE', color: 'var(--green)', valid: false }
+                { txt: 'CLIQUE', color: 'var(--green)', valid: true }, { txt: 'PARE', color: 'var(--red)', valid: false },
+                { txt: 'CLIQUE', color: 'var(--red)', valid: false }, { txt: 'PARE', color: 'var(--green)', valid: false }
             ];
-            // Escolhe aleatoriamente o cenário atual do teste de inibição
             let activeConfig = config[Math.floor(Math.random() * config.length)];
-
-            stage.innerHTML = `
-                <p style="font-weight:700; margin-bottom:10px; text-align:center;">CONTROLE SEU IMPULSO:<br>SÓ CLIQUE SE FOR <span style="color:var(--green)">"CLIQUE" VERDE</span>!</p>
-                <h1 style="font-size:4.5rem; color:${activeConfig.color}; margin:30px 0; font-weight:900; background:rgba(0,0,0,0.2); padding:10px 40px; border-radius:15px;">${activeConfig.txt}</h1>
-                <div style="display:flex; gap:20px;">
-                    <button id="action-btn" class="stroop-btn" style="background:var(--blue)">CLICAR</button>
-                    <button id="skip-btn" class="stroop-btn" style="background:var(--gray)">IGNORAR / NÃO CLICAR</button>
-                </div>
-            `;
-
-            stage.querySelector('#action-btn').onclick = () => {
-                if(activeConfig.valid) { score += 40; level++; initLevel(); }
-                else { alert("Você agiu por impulso! Não devia ter clicado nesse."); location.reload(); }
-            };
-
-            stage.querySelector('#skip-btn').onclick = () => {
-                if(!activeConfig.valid) { score += 40; level++; initLevel(); }
-                else { alert("Você ignorou um comando válido! Devia ter clicado."); location.reload(); }
-            };
+            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px; text-align:center;">SÓ CLIQUE SE FOR <span style="color:var(--green)">"CLIQUE" VERDE</span>!</p><h1 style="font-size:4.5rem; color:${activeConfig.color}; margin:30px 0; font-weight:900; background:rgba(0,0,0,0.2); padding:10px 40px; border-radius:15px;">${activeConfig.txt}</h1><div style="display:flex; gap:20px; width: 100%; max-width: 600px;"><button id="action-btn" class="stroop-btn" style="background:var(--blue)">CLICAR</button><button id="skip-btn" class="stroop-btn" style="background:var(--gray)">IGNORAR</button></div>`;
+            stage.querySelector('#action-btn').onclick = () => { if(activeConfig.valid) { score += 40; level++; initLevel(); } else location.reload(); };
+            stage.querySelector('#skip-btn').onclick = () => { if(!activeConfig.valid) { score += 40; level++; initLevel(); } else location.reload(); };
         }
 
-        // --- ENGINE DO TIMER DO JOGO ---
+        // --- TIMING ENGINE ---
         function startTimer() {
             document.getElementById('timer').innerText = timeLeft;
             timerId = setInterval(() => {
-                timeLeft--;
-                document.getElementById('timer').innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(timerId);
-                    if(gameLoopInterval) clearInterval(gameLoopInterval);
-                    alert("O tempo esgotou! Score final: " + score);
-                    location.reload();
-                }
+                timeLeft--; document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) { clearInterval(timerId); if(gameLoopInterval) clearInterval(gameLoopInterval); alert("O tempo esgotou! Score final: " + score); location.reload(); }
             }, 1000);
         }
     </script>
