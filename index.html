@@ -57,12 +57,12 @@
 
         .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; position: relative; overflow-y: auto; }
 
-        /* BOTÕES DE MARCAÇÃO EXPANDIDOS (CÁLCULO E NOVOS MODOS) */
-        #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 500px; }
+        /* BOTÕES DE MARCAÇÃO GIGANTES */
+        #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 600px; }
         .calc-btn {
-            background: white; color: #333; padding: 25px 45px; border-radius: 20px;
+            background: white; color: #333; padding: 30px 55px; border-radius: 24px;
             cursor: pointer; border: none; border-bottom: 8px solid #ccc; font-weight: 900;
-            font-size: 2.2rem; text-align: center; min-width: 140px;
+            font-size: 2.6rem; text-align: center; min-width: 160px;
         }
         .calc-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); }
         .calc-btn:active { transform: translateY(3px); border-bottom-width: 2px; }
@@ -115,9 +115,9 @@
             .main-stage { padding: 20px 15px; flex: 1; }
             .btn-exit { position: absolute; top: 12px; right: 15px; padding: 6px 12px; font-size: 0.75rem; }
 
-            /* Ajustes Específicos para Alternativas Maiores */
-            #opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 320px; }
-            .calc-btn { font-size: 1.8rem; padding: 20px 10px; border-bottom-width: 5px; min-width: 0; width: 100%; }
+            /* AJUSTES PARA BOTÕES DE OPÇÕES ULTRA GIGANTES NO MOBILE */
+            #opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 100%; width: 92%; }
+            .calc-btn { font-size: 2.2rem; padding: 25px 10px; border-bottom-width: 6px; min-width: 0; width: 100%; border-radius: 18px; }
 
             /* Dimensionamento responsivo de Elementos Visuais */
             .color-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px !important; width: 100%; max-width: 280px; }
@@ -141,7 +141,6 @@
             <div class="game-card" onclick="loadGame('foco')" style="border-color: var(--green)"><span>🎯</span>FOCO SELETIVO</div>
             <div class="game-card" onclick="loadGame('ordem')" style="border-color: var(--pink)"><span>🔡</span>ORDEM CRESCENTE</div>
             <div class="game-card" onclick="loadGame('reacao')" style="border-color: #333"><span>🚀</span>VELOCIDADE LUZ</div>
-            <!-- NOVOS JOGOS ADICIONADOS -->
             <div class="game-card" onclick="loadGame('matriz')" style="border-color: var(--yellow)"><span>🔲</span>PADRÃO MATRIZ</div>
             <div class="game-card" onclick="loadGame('stroop')" style="border-color: var(--pink)"><span>🎨</span>TESTE STROOP</div>
             <div class="game-card" onclick="loadGame('setas')" style="border-color: var(--blue)"><span>↔️</span>SETAS CONFLITANTES</div>
@@ -198,7 +197,7 @@
             startTimer();
         }
 
-        // --- JOGO DAS CORES (MODO GENIUS COM FEEDBACK) ---
+        // --- JOGO DAS CORES ---
         function playCores(stage) {
             stage.innerHTML = `<div class="color-grid" id="c-grid">
                 <div class="pad" style="background:var(--blue)" onclick="handleColorClick(this, 0)"><div class="badge-click">CLICADO!</div></div>
@@ -264,7 +263,7 @@
         function playCalculo(stage) {
             let a = Math.floor(Math.random() * (10 * level)), b = Math.floor(Math.random() * (10 * level));
             let res = a + b;
-            stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:20px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
+            stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:25px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
             const optsContainer = stage.querySelector('#opts');
             [res, res+2, res-3, res+5].sort(() => Math.random()-0.5).forEach(o => {
                 const btn = document.createElement('button'); btn.className = 'calc-btn'; btn.innerText = o;
@@ -303,9 +302,9 @@
             }, 1000 + Math.random() * 3000);
         }
 
-        // --- 🧠 NOVO JOGO: PADRÃO MATRIZ (MEMÓRIA) ---
+        // --- 🧠 PADRÃO MATRIZ (MEMÓRIA) ---
         function playMatriz(stage) {
-            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:10px;">DECORE O PADRÃO ILUMINADO!</p>
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">DECORE O PADRÃO ILUMINADO!</p>
                                <div id="matrix-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; width:100%; max-width:280px; aspect-ratio:1;"></div>`;
             const grid = stage.querySelector('#matrix-grid');
             let size = 9; let activeTiles = [];
@@ -350,7 +349,7 @@
             }, 1200);
         }
 
-        // --- 🎯 NOVO JOGO: TESTE DE STROOP (CONCENTRAÇÃO) ---
+        // --- 🎯 TESTE DE STROOP (CONCENTRAÇÃO) ---
         function playStroop(stage) {
             const names = ['AZUL', 'VERMELHO', 'VERDE', 'AMARELO'];
             const vars = ['var(--blue)', 'var(--red)', 'var(--green)', 'var(--yellow)'];
@@ -366,7 +365,7 @@
             for(let i=0; i<4; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'calc-btn'; btn.style.background = vars[i];
-                btn.style.border = '4px solid rgba(0,0,0,0.2)'; btn.style.height = '75px';
+                btn.style.border = '4px solid rgba(0,0,0,0.2)'; btn.style.height = '100px';
                 btn.onclick = () => {
                     if(i === colorIdx) { score += 30; level++; initLevel(); }
                     else { alert("Incorreto! Você deve focar na cor, não na palavra."); location.reload(); }
@@ -375,7 +374,7 @@
             }
         }
 
-        // --- ⚡ NOVO JOGO: SETAS CONFLITANTES (ATENÇÃO SELETIVA) ---
+        // --- ⚡ SETAS CONFLITANTES (ATENÇÃO SELETIVA) ---
         function playSetas(stage) {
             let isRight = Math.random() > 0.5;
             let isCongruent = Math.random() > 0.5;
@@ -383,9 +382,9 @@
             
             stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:5px;">FOQUE APENAS NA SETA DO CENTRO!</p>
                                <h1 style="font-size:4rem; letter-spacing:8px; margin:20px 0; color:var(--yellow); text-shadow:0 5px 15px rgba(0,0,0,0.3);">${arrowStr}</h1>
-                               <div id="opts" style="max-width:340px;">
-                                   <button id="b-left" class="calc-btn" style="width:100%;">◀</button>
-                                   <button id="b-right" class="calc-btn" style="width:100%;">▶</button>
+                               <div id="opts">
+                                   <button id="b-left" class="calc-btn">◀</button>
+                                   <button id="b-right" class="calc-btn">▶</button>
                                </div>`;
                                
             stage.querySelector('#b-left').onclick = () => { if(!isRight) { score += 35; level++; initLevel(); } else { alert("Direção errada!"); location.reload(); } };
