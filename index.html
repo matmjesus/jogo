@@ -228,21 +228,63 @@
             else if (playerSeq.length === internalSeq.length) { score += 50; level++; setTimeout(initLevel, 600); }
         }
 
-        // --- 2. PARES NUMÉRICOS ---
+        // --- 2. PARES NUMÉRICOS (TOTALMENTE CORRIGIDO E BLINDADO) ---
         function playMemoria(stage) {
             let pairs = Math.min(10, 1 + level); let totalCards = pairs * 2;
-            let deck = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5); let flipped = [];
+            let currentIcons = icons.slice(0, pairs);
+            // Monta o deck com pares estruturados { icon, id } para manter referências estáveis
+            let deck = [];
+            currentIcons.forEach((icon) => {
+                deck.push({ item: icon });
+                deck.push({ item: icon });
+            });
+            deck.sort(() => Math.random() - 0.5);
+            
+            let flipped = [];
             let cols = totalCards % 5 === 0 ? 5 : 4;
             stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px; text-align:center;">ENCONTRE OS PARES!</p><div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:400px;"></div>`;
             const grid = stage.querySelector('#mem-grid');
-            deck.forEach((icon, i) => {
-                const c = document.createElement('div'); c.className = 'mem-card'; c.style.aspectRatio = '1'; c.style.fontSize = '1.5rem'; c.innerText = i + 1;
+            
+            deck.forEach((card, index) => {
+                const c = document.createElement('div'); 
+                c.className = 'mem-card'; 
+                c.style.aspectRatio = '1'; 
+                c.style.fontSize = '1.5rem'; 
+                c.innerText = index + 1; // Número exibido na frente da carta
+                c.setAttribute('data-card-id', index + 1); // Guarda o número fixo e imutável
+
                 c.onclick = () => {
-                    if (flipped.length < 2 && !c.classList.contains('flipped')) {
-                        c.classList.add('flipped'); c.innerText = icon; c.style.background = 'white'; c.style.color = 'black'; flipped.push(c);
+                    if (flipped.length < 2 && !c.classList.contains('flipped') && !c.classList.contains('matched')) {
+                        c.classList.add('flipped'); 
+                        c.innerText = card.item; // Mostra o emoji escondido
+                        c.style.background = 'white'; 
+                        c.style.color = 'black'; 
+                        flipped.push({ element: c, val: card.item });
+                        
                         if (flipped.length === 2) {
-                            if (flipped[0].innerText === flipped[1].innerText) { score += 20; flipped = []; if (grid.querySelectorAll('.flipped').length === deck.length) { level++; setTimeout(initLevel, 800); } }
-                            else { setTimeout(() => { flipped.forEach(x => { x.classList.remove('flipped'); x.innerText = deck.indexOf(x.innerText) + 1; x.style.background = 'var(--blue)'; x.style.color = 'white'; }); flipped = []; }, 700); }
+                            if (flipped[0].val === flipped[1].val) { 
+                                score += 20; 
+                                flipped[0].element.classList.add('matched');
+                                flipped[1].element.classList.add('matched');
+                                flipped = []; 
+                                if (grid.querySelectorAll('.matched').length === deck.length) { 
+                                    level++; 
+                                    setTimeout(initLevel, 800); 
+                                } 
+                            } else { 
+                                gameActive = false; // Bloqueia cliques temporariamente
+                                setTimeout(() => { 
+                                    flipped.forEach(x => { 
+                                        x.element.classList.remove('flipped'); 
+                                        // Restaura exatamente o número fixado de fábrica no atributo, sem alterar as posições
+                                        x.element.innerText = x.element.getAttribute('data-card-id'); 
+                                        x.element.style.background = 'var(--blue)'; 
+                                        x.element.style.color = 'white'; 
+                                    }); 
+                                    flipped = []; 
+                                    gameActive = true;
+                                }, 800); 
+                            }
                         }
                     }
                 };
