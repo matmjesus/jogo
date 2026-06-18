@@ -15,7 +15,6 @@
             --yellow: #f1c40f;
             --white: #ffffff;
             --pink: #ff6b6b;
-            /* NOVAS CORES ADICIONADAS */
             --orange: #e67e22;
             --cyan: #1abc9c;
             --purple: #9b59b6;
@@ -242,36 +241,109 @@
             }
         }
 
-        // --- OUTROS JOGOS ---
+        // --- 🔢 PARES NUMÉRICOS (JOGO DOS PARES) ---
         function playMemoria(stage) {
-            let n = 2 + level;
-            let deck = [...icons.slice(0, n), ...icons.slice(0, n)].sort(() => Math.random() - 0.5);
+            let pairs = Math.min(10, 2 + Math.floor((level - 1) / 1.5));
+            let deck = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5);
             let flipped = [];
-            stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.gap = '10px';
+            
+            let cols = 2;
+            if (pairs === 3) cols = 3;
+            else if (pairs === 4) cols = 4;
+            else if (pairs === 5 || pairs === 10) cols = 5;
+            else if (pairs >= 6) cols = 4;
+
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">ENCONTRE OS PARES IDÊNTICOS!</p>
+                               <div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:350px;"></div>`;
+            const grid = stage.querySelector('#mem-grid');
+
             deck.forEach((icon, i) => {
-                const c = document.createElement('div'); c.className = 'mem-card'; c.innerText = i + 1;
+                const c = document.createElement('div'); 
+                c.className = 'mem-card'; 
+                
+                c.style.setProperty('width', '100%', 'important');
+                c.style.setProperty('height', 'auto', 'important');
+                c.style.setProperty('aspect-ratio', '1', 'important');
+                c.style.fontSize = pairs >= 8 ? '1.5rem' : '2rem';
+                c.innerText = '?';
+                
                 c.onclick = () => {
                     if (flipped.length < 2 && !c.classList.contains('flipped')) {
-                        c.classList.add('flipped'); c.innerText = icon; c.style.background = 'white'; c.style.color = 'black';
+                        c.classList.add('flipped'); 
+                        c.innerText = icon; 
+                        c.style.background = 'white'; 
+                        c.style.color = 'black';
                         flipped.push(c);
+                        
                         if (flipped.length === 2) {
-                            if (flipped[0].innerText === flipped[1].innerText) { score += 20; flipped = []; if (document.querySelectorAll('.flipped').length === deck.length) { level++; setTimeout(initLevel, 1000); } }
-                            else { setTimeout(() => { flipped.forEach(x => { x.classList.remove('flipped'); x.innerText = deck.indexOf(x.innerText)+1; x.style.background = 'var(--blue)'; x.style.color = 'white'; }); flipped = []; }, 800); }
+                            if (flipped[0].innerText === flipped[1].innerText) { 
+                                score += 20; 
+                                flipped = []; 
+                                if (grid.querySelectorAll('.flipped').length === deck.length) { 
+                                    level++; 
+                                    setTimeout(initLevel, 1000); 
+                                } 
+                            } else { 
+                                setTimeout(() => { 
+                                    flipped.forEach(x => { 
+                                        x.classList.remove('flipped'); 
+                                        x.innerText = '?'; 
+                                        x.style.background = 'var(--blue)'; 
+                                        x.style.color = 'white'; 
+                                    }); 
+                                    flipped = []; 
+                                }, 800); 
+                            }
                         }
                     }
                 };
-                stage.appendChild(c);
+                grid.appendChild(c);
             });
         }
 
+        // --- ➕ CÁLCULO RÁPIDO REFORMULADO (SEM TRUQUES DE UNIDADE) ---
         function playCalculo(stage) {
-            let a = Math.floor(Math.random() * (10 * level)), b = Math.floor(Math.random() * (10 * level));
+            let a = Math.floor(Math.random() * (10 * level)) + 1;
+            let b = Math.floor(Math.random() * (10 * level)) + 1;
             let res = a + b;
+            
             stage.innerHTML = `<h1 style="font-size:3.5rem; margin-bottom:25px;">${a} + ${b} = ?</h1><div id="opts"></div>`;
             const optsContainer = stage.querySelector('#opts');
-            [res, res+2, res-3, res+5].sort(() => Math.random()-0.5).forEach(o => {
-                const btn = document.createElement('button'); btn.className = 'calc-btn'; btn.innerText = o;
-                btn.onclick = () => { if(o === res) { score += 30; level++; initLevel(); } else { alert("Errado!"); location.reload(); } };
+            
+            // Cria um Set para garantir 4 respostas únicas e de alta semelhança visual
+            let optionsSet = new Set([res]);
+            
+            // Pool de variações estruturadas para camuflar a resposta correta
+            // (+10, -10, +20 mudam a dezena mantendo a mesma unidade)
+            // (+1, -1, +2 aproximam o número anulando a eliminação por aproximação)
+            let pool = [10, -10, 1, -1, 2, -2, 20, -20];
+            
+            for (let v of pool) {
+                if (optionsSet.size >= 4) break;
+                let fake = res + v;
+                if (fake > 0) optionsSet.add(fake);
+            }
+            
+            // Fallback de segurança absoluto para níveis iniciais com números muito pequenos
+            while (optionsSet.size < 4) {
+                optionsSet.add(res + Math.floor(Math.random() * 10) + 1);
+            }
+            
+            // Converte em array e embaralha as opções finais
+            let options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+            
+            options.forEach(o => {
+                const btn = document.createElement('button'); 
+                btn.className = 'calc-btn'; 
+                btn.innerText = o;
+                btn.onclick = () => { 
+                    if(o === res) { 
+                        score += 30; level++; initLevel(); 
+                    } else { 
+                        alert("Errado! O resultado correto era: " + res); 
+                        location.reload(); 
+                    } 
+                };
                 optsContainer.appendChild(btn);
             });
         }
@@ -306,14 +378,18 @@
             }, 1000 + Math.random() * 3000);
         }
 
-        // --- 🔲 PADRÃO MATRIZ (MEMÓRIA) ---
+        // --- 🔲 PADRÃO MATRIZ (GRADE EVOLUTIVA 2x2 ATÉ 6x6) ---
         function playMatriz(stage) {
-            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">DECORE O PADRÃO ILUMINADO!</p>
-                               <div id="matrix-grid" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; width:100%; max-width:280px; aspect-ratio:1;"></div>`;
-            const grid = stage.querySelector('#matrix-grid');
-            let size = 9; let activeTiles = [];
-            let count = 2 + Math.min(level, 4);
+            let side = Math.min(6, 2 + (level - 1));
+            let size = side * side;
             
+            let count = Math.min(size - 2, 1 + level);
+            
+            stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">DECORE O PADRÃO ILUMINADO!</p>
+                               <div id="matrix-grid" style="display:grid; grid-template-columns:repeat(${side}, 1fr); gap:6px; width:100%; max-width:340px; aspect-ratio:1;"></div>`;
+            const grid = stage.querySelector('#matrix-grid');
+            
+            let activeTiles = [];
             while(activeTiles.length < count) {
                 let r = Math.floor(Math.random() * size);
                 if(!activeTiles.includes(r)) activeTiles.push(r);
@@ -324,12 +400,14 @@
             for(let i=0; i<size; i++) {
                 const tile = document.createElement('div');
                 tile.style.background = 'rgba(255,255,255,0.15)';
-                tile.style.borderRadius = '15px';
+                tile.style.borderRadius = side >= 5 ? '6px' : '12px';
                 tile.style.cursor = 'pointer';
                 tile.dataset.id = i;
                 grid.appendChild(tile);
                 if(activeTiles.includes(i)) tile.style.background = 'var(--yellow)';
             }
+            
+            let memorizeTime = 1000 + (count * 180);
             
             setTimeout(() => {
                 grid.querySelectorAll('div').forEach(t => t.style.background = 'rgba(255,255,255,0.15)');
@@ -350,12 +428,11 @@
                         }
                     };
                 });
-            }, 1200);
+            }, memorizeTime);
         }
 
-        // --- 🎯 TESTE DE STROOP COM PALETA EXPANDIDA E ALEATÓRIA (CONCENTRAÇÃO) ---
+        // --- 🎯 TESTE DE STROOP ---
         function playStroop(stage) {
-            // Banco de dados completo com as 8 cores da paleta
             const palette = [
                 { name: 'AZUL', color: 'var(--blue)' },
                 { name: 'VERMELHO', color: 'var(--red)' },
@@ -367,7 +444,6 @@
                 { name: 'ROXO', color: 'var(--purple)' }
             ];
             
-            // Sorteia aleatoriamente um item para o texto escrito e outro para a cor visual
             let wordItem = palette[Math.floor(Math.random() * palette.length)];
             let colorItem = palette[Math.floor(Math.random() * palette.length)];
             
@@ -375,19 +451,14 @@
                                <h1 style="font-size:3.8rem; color:${colorItem.color}; text-shadow: 2px 4px 10px rgba(0,0,0,0.4); margin:15px 0;">${wordItem.name}</h1>
                                <div id="opts"></div>`;
             
-            // Garante que a opção correta estará entre as alternativas
             let options = [colorItem];
-            
-            // Filtra as demais cores para selecionar as falsas
             let remaining = palette.filter(item => item.color !== colorItem.color);
             remaining.sort(() => Math.random() - 0.5);
             
-            // Adiciona 3 opções falsas aleatórias para formar o painel de 4 botões
             for(let i = 0; i < 3; i++) {
                 options.push(remaining[i]);
             }
             
-            // Embaralha as 4 alternativas finais para esconder a resposta certa
             options.sort(() => Math.random() - 0.5);
             
             const container = stage.querySelector('#opts');
@@ -409,7 +480,7 @@
             });
         }
 
-        // --- ⚡ SETAS CONFLITANTES (ATENÇÃO SELETIVA) ---
+        // --- ⚡ SETAS CONFLITANTES ---
         function playSetas(stage) {
             let isRight = Math.random() > 0.5;
             let isCongruent = Math.random() > 0.5;
