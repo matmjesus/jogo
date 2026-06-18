@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mente Ativa - Brain Games Ultra</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
     <style>
@@ -13,36 +13,47 @@
             --red: #e74c3c;
             --green: #2ecc71;
             --yellow: #f1c40f;
+            --pink: #e056fd;
             --white: #ffffff;
         }
 
         * { box-sizing: border-box; transition: all 0.2s ease; }
+        
         body {
             font-family: 'Montserrat', sans-serif;
             background: radial-gradient(circle at center, var(--purple-light), var(--purple-dark));
-            color: white; margin: 0; height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
+            color: white; 
+            margin: 0; 
+            height: 100vh; 
+            overflow: hidden;
+            display: flex; 
+            flex-direction: column;
+            /* Impede seleção de texto acidental durante os cliques rápidos */
+            user-select: none; 
+            -webkit-user-select: none;
         }
 
         /* TELA INICIAL */
         #home-screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100%; padding: 40px; text-align: center;
+            height: 100%; padding: 20px; text-align: center;
+            overflow-y: auto;
         }
         .logo { font-size: 3.5rem; font-weight: 900; margin-bottom: 40px; text-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .menu-grid {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px; width: 100%; max-width: 1100px;
+            gap: 20px; width: 100%; max-width: 1100px; padding-bottom: 20px;
         }
         .game-card {
             background: white; color: #333; padding: 25px; border-radius: 20px;
             cursor: pointer; border-bottom: 8px solid #ccc; font-weight: 900;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .game-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
         .game-card span { font-size: 2.5rem; display: block; margin-bottom: 10px; }
 
         /* INTERFACE DE JOGO */
-        #game-interface { display: none; flex: 1; position: relative; width: 100%; }
+        #game-interface { display: none; flex: 1; position: relative; width: 100%; flex-direction: row; height: 100%; }
         
         .sidebar {
             width: 300px; background: rgba(0,0,0,0.3); padding: 30px;
@@ -50,201 +61,33 @@
             border-right: 2px solid rgba(255,255,255,0.1);
         }
 
-        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; position: relative; }
+        .main-stage { 
+            flex: 1; display: flex; flex-direction: column; align-items: center; 
+            justify-content: center; padding: 40px; position: relative; 
+            overflow-y: auto; 
+        }
 
-        /* ESTILO ESPECÍFICO: GÊNIO DAS CORES (MODIFICADO) */
+        /* ESTILO ESPECÍFICO: GÊNIO DAS CORES */
         .color-grid { display: grid; grid-template-columns: repeat(2, 180px); gap: 20px; }
         .pad {
             width: 180px; height: 180px; border-radius: 25px; cursor: pointer;
             position: relative; border: 5px solid rgba(0,0,0,0.2);
+            /* Previne o highlight padrão de toque no mobile */
+            -webkit-tap-highlight-color: transparent; 
         }
         .pad.active { transform: scale(0.95); box-shadow: 0 0 60px white; filter: brightness(1.6); }
         .badge-click {
             position: absolute; background: white; color: black; padding: 6px 12px;
             border-radius: 50px; font-size: 0.8rem; top: -30px; left: 50%;
             transform: translateX(-50%); display: none; pointer-events: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: popUp 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3); animation: popUp 0.3s ease; z-index: 5;
         }
         @keyframes popUp { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-        /* OUTROS ELEMENTOS */
+        /* OUTROS ELEMENTOS E CLASSES UTILITÁRIAS */
         .timer-circle { width: 110px; height: 110px; border-radius: 50%; border: 6px solid white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.1); }
-        .btn-exit { position: absolute; top: 20px; right: 30px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; }
-        .mem-card { background: var(--blue); width: 100px; height: 100px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; border-bottom: 5px solid rgba(0,0,0,0.3); }
-    </style>
-</head>
-<body>
-
-    <div id="home-screen">
-        <div class="logo">BRAIN GAMES PRO ⚡</div>
-        <div class="menu-grid">
-            <div class="game-card" onclick="loadGame('cores')" style="border-color: var(--yellow)"><span>✨</span>GÊNIO DAS CORES</div>
-            <div class="game-card" onclick="loadGame('memoria')" style="border-color: var(--blue)"><span>🔢</span>PARES NUMÉRICOS</div>
-            <div class="game-card" onclick="loadGame('calculo')" style="border-color: var(--red)"><span>➕</span>CÁLCULO RÁPIDO</div>
-            <div class="game-card" onclick="loadGame('foco')" style="border-color: var(--green)"><span>🎯</span>FOCO SELETIVO</div>
-            <div class="game-card" onclick="loadGame('ordem')" style="border-color: var(--pink)"><span>🔡</span>ORDEM CRESCENTE</div>
-            <div class="game-card" onclick="loadGame('reacao')" style="border-color: #333"><span>🚀</span>VELOCIDADE LUZ</div>
-        </div>
-    </div>
-
-    <div id="game-interface">
-        <button class="btn-exit" onclick="location.reload()">SAIR ➔</button>
-        <div class="sidebar">
-            <div style="text-align:center">
-                <h1 id="mode-title" style="margin:0">JOGO</h1>
-                <p>Level: <span id="lvl">1</span> | Score: <span id="scr">0</span></p>
-            </div>
-            <div class="timer-circle" id="timer">15</div>
-            <div style="background:white; color:black; padding:15px; border-radius:15px; font-weight:900; text-align:center">
-                RODADA ATIVA
-            </div>
-        </div>
-        <div class="main-stage" id="stage"></div>
-    </div>
-
-    <script>
-        let mode = ''; let level = 1; let score = 0; let timeLeft = 15;
-        let timerId; let internalSeq = []; let playerSeq = []; let gameActive = false;
-
-        const icons = ['🐶','🚀','🧠','💎','🔥','⭐','🌈','👾','🍀','🍕','🦁','🛸'];
-
-        function loadGame(m) {
-            mode = m; level = 1; score = 0;
-            document.getElementById('home-screen').style.display = 'none';
-            document.getElementById('game-interface').style.display = 'flex';
-            document.getElementById('mode-title').innerText = m.toUpperCase();
-            initLevel();
-        }
-
-        function initLevel() {
-            gameActive = true; timeLeft = 15;
-            document.getElementById('lvl').innerText = level;
-            document.getElementById('scr').innerText = score;
-            const stage = document.getElementById('stage');
-            stage.innerHTML = '';
-            clearInterval(timerId);
-
-            if (mode === 'cores') playCores(stage);
-            else if (mode === 'memoria') playMemoria(stage);
-            else if (mode === 'calculo') playCalculo(stage);
-            else if (mode === 'foco') playFoco(stage);
-            else if (mode === 'ordem') playOrdem(stage);
-            else if (mode === 'reacao') playReacao(stage);
-
-            startTimer();
-        }
-
-        // --- JOGO DAS CORES (MODO GENIUS COM FEEDBACK) ---
-        function playCores(stage) {
-            stage.innerHTML = `<div class="color-grid" id="c-grid">
-                <div class="pad" style="background:var(--blue)" onclick="handleColorClick(this, 0)"><div class="badge-click">CLICADO!</div></div>
-                <div class="pad" style="background:var(--red)" onclick="handleColorClick(this, 1)"><div class="badge-click">CLICADO!</div></div>
-                <div class="pad" style="background:var(--green)" onclick="handleColorClick(this, 2)"><div class="badge-click">CLICADO!</div></div>
-                <div class="pad" style="background:var(--yellow)" onclick="handleColorClick(this, 3)"><div class="badge-click">CLICADO!</div></div>
-            </div>`;
-            
-            internalSeq = Array.from({length: level + 1}, () => Math.floor(Math.random() * 4));
-            playerSeq = [];
-            runSequence();
-        }
-
-        async function runSequence() {
-            gameActive = false;
-            for (let id of internalSeq) {
-                await new Promise(r => setTimeout(r, 600));
-                const p = document.querySelectorAll('.pad')[id];
-                p.classList.add('active');
-                setTimeout(() => p.classList.remove('active'), 400);
-            }
-            gameActive = true;
-        }
-
-        function handleColorClick(el, id) {
-            if (!gameActive) return;
-            
-            // Efeito visual solicitado
-            el.classList.add('active');
-            const b = el.querySelector('.badge-click');
-            b.style.display = 'block';
-            setTimeout(() => { el.classList.remove('active'); b.style.display = 'none'; }, 300);
-
-            playerSeq.push(id);
-            if (playerSeq[playerSeq.length-1] !== internalSeq[playerSeq.length-1]) {
-                alert("Sequência Errada!"); location.reload();
-            } else if (playerSeq.length === internalSeq.length) {
-                score += 50; level++; setTimeout(initLevel, 800);
-            }
-        }
-
-        // --- OUTROS JOGOS ---
-        function playMemoria(stage) {
-            let n = 2 + level;
-            let deck = [...icons.slice(0, n), ...icons.slice(0, n)].sort(() => Math.random() - 0.5);
-            let flipped = [];
-            stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.gap = '10px';
-            deck.forEach((icon, i) => {
-                const c = document.createElement('div'); c.className = 'mem-card'; c.innerText = i + 1;
-                c.onclick = () => {
-                    if (flipped.length < 2 && !c.classList.contains('flipped')) {
-                        c.classList.add('flipped'); c.innerText = icon; c.style.background = 'white'; c.style.color = 'black';
-                        flipped.push(c);
-                        if (flipped.length === 2) {
-                            if (flipped[0].innerText === flipped[1].innerText) { score += 20; flipped = []; if (document.querySelectorAll('.flipped').length === deck.length) { level++; setTimeout(initLevel, 1000); } }
-                            else { setTimeout(() => { flipped.forEach(x => { x.classList.remove('flipped'); x.innerText = deck.indexOf(x.innerText)+1; x.style.background = 'var(--blue)'; x.style.color = 'white'; }); flipped = []; }, 800); }
-                        }
-                    }
-                };
-                stage.appendChild(c);
-            });
-        }
-
-        function playCalculo(stage) {
-            let a = Math.floor(Math.random() * (10 * level)), b = Math.floor(Math.random() * (10 * level));
-            let res = a + b;
-            stage.innerHTML = `<h1 style="font-size:4rem">${a} + ${b} = ?</h1><div id="opts"></div>`;
-            [res, res+2, res-3, res+5].sort(() => Math.random()-0.5).forEach(o => {
-                const btn = document.createElement('button'); btn.className = 'game-card'; btn.style.margin = '10px'; btn.innerText = o;
-                btn.onclick = () => { if(o === res) { score += 30; level++; initLevel(); } else location.reload(); };
-                stage.querySelector('#opts').appendChild(btn);
-            });
-        }
-
-        function playFoco(stage) {
-            let chars = ['M', 'W', 'N']; let main = chars[level % 3], intruder = 'H';
-            for(let i=0; i<30+(level*5); i++) {
-                const d = document.createElement('span'); d.style.fontSize = '2.5rem'; d.style.padding = '10px'; d.style.cursor = 'pointer';
-                d.innerText = main;
-                if(i === 15) { d.innerText = intruder; d.onclick = () => { score += 40; level++; initLevel(); } }
-                stage.appendChild(d);
-                stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap';
-            }
-        }
-
-        function playOrdem(stage) {
-            let nums = Array.from({length: 3+level}, () => Math.floor(Math.random()*100));
-            let sorted = [...nums].sort((a,b) => a-b); let idx = 0;
-            stage.style.flexDirection = 'row'; stage.style.flexWrap = 'wrap'; stage.style.gap = '15px';
-            nums.forEach(n => {
-                const b = document.createElement('div'); b.className = 'mem-card'; b.innerText = n;
-                b.onclick = () => { if(n === sorted[idx]) { b.style.opacity = '0'; idx++; if(idx === nums.length) { score += 50; level++; initLevel(); } } else location.reload(); };
-                stage.appendChild(b);
-            });
-        }
-
-        function playReacao(stage) {
-            stage.innerHTML = '<h1>AGUARDE O VERDE...</h1>';
-            setTimeout(() => {
-                stage.innerHTML = '<div id="target" style="width:250px;height:250px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer"><h1>CLIQUE!</h1></div>';
-                stage.querySelector('#target').onclick = () => { score += 100; level++; initLevel(); };
-            }, 1000 + Math.random() * 3000);
-        }
-
-        function startTimer() {
-            timerId = setInterval(() => {
-                timeLeft--; document.getElementById('timer').innerText = timeLeft;
-                if (timeLeft <= 0) { clearInterval(timerId); alert("Fim de Jogo! Score: " + score); location.reload(); }
-            }, 1000);
-        }
-    </script>
-</body>
-</html>
+        .btn-exit { position: absolute; top: 20px; right: 30px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; z-index: 10; }
+        .mem-card { background: var(--blue); width: 100px; height: 100px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; border-bottom: 5px solid rgba(0,0,0,0.3); -webkit-tap-highlight-color: transparent; }
+        .calc-title { font-size: 4rem; text-align: center; margin-top: 0; }
+        .foco-item { font-size: 2.5rem; padding: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent;}
+        .opts-container { display: flex; flex-wrap: wrap; justify-content: center
