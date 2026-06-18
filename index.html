@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mente Ativa - Brain Games Ultra</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --purple-dark: #250a52;
@@ -125,7 +125,9 @@
             /* Dimensionamento responsivo de Elementos Visuais */
             .color-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 15px !important; width: 100%; max-width: 280px; }
             .pad { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 15px !important; }
-            .mem-card { width: 65px !important; height: 65px !important; font-size: 1.5rem !important; border-radius: 10px !important; }
+            
+            /* Deixa que o script controle as fontes das cartas da memória, removendo o limitador fixo antigo do CSS */
+            .mem-card { width: 65px !important; height: 65px !important; border-radius: 10px !important; }
             
             #stage h1 { font-size: 2.2rem !important; text-align: center; }
             #stage p { font-size: 1rem !important; text-align: center; }
@@ -169,7 +171,6 @@
         let mode = ''; let level = 1; let score = 0; let timeLeft = 15;
         let timerId; let internalSeq = []; let playerSeq = []; let gameActive = false;
 
-        // Banco expandido de ícones para suportar grades muito maiores em níveis altos
         const icons = ['🐶','🚀','🧠','💎','🔥','⭐','🌈','👾','🍀','🍕','🦁','🛸','🍎','🎸','👑','🎈','🚗','🦊','🦈','🍩'];
 
         function loadGame(m) {
@@ -242,37 +243,38 @@
             }
         }
 
-        // --- 🔢 PARES NUMÉRICOS ATUALIZADO (DIFICULDADE CRESCENTE POR NÍVEL) ---
+        // --- 🔢 PARES NUMÉRICOS (OTIMIZADO COM EMOJIS GRANDES) ---
         function playMemoria(stage) {
-            // Define a quantidade de pares escalando a cada nível (Nível 1 = 2 pares, Nível 2 = 3 pares, Nível 3 = 4 pares...)
-            // O limite máximo é definido pelo tamanho do banco de ícones (20 pares = 40 cartas)
             let pairs = Math.min(20, 1 + level); 
             let totalCards = pairs * 2;
             let deck = [...icons.slice(0, pairs), ...icons.slice(0, pairs)].sort(() => Math.random() - 0.5);
             let flipped = [];
             
-            // Calcula as colunas de forma inteligente para manter o formato do grid simétrico
             let cols = 2;
             if (totalCards % 5 === 0 && totalCards !== 10) cols = 5;
             else if (totalCards % 4 === 0) cols = 4;
             else if (totalCards % 3 === 0) cols = 3;
             else if (totalCards > 10) cols = 4;
 
+            // Expandido o max-width para 600px para acomodar as cartas sem espremê-las
             stage.innerHTML = `<p style="font-size:1.2rem;margin-bottom:15px;">ENCONTRE OS PARES! (${totalCards} PEÇAS)</p>
-                               <div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:420px;"></div>`;
+                               <div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:600px;"></div>`;
             const grid = stage.querySelector('#mem-grid');
 
             deck.forEach((icon) => {
                 const c = document.createElement('div'); 
                 c.className = 'mem-card'; 
                 
-                // Configurações responsivas para caber perfeitamente na tela do celular sem quebrar
                 c.style.setProperty('width', '100%', 'important');
                 c.style.setProperty('height', 'auto', 'important');
                 c.style.setProperty('aspect-ratio', '1', 'important');
                 
-                // Diminui o emoji caso haja muitas cartas na tela
-                c.style.fontSize = totalCards > 16 ? '1.3rem' : (totalCards > 8 ? '1.7rem' : '2rem');
+                // ESCALA DE FONTE CORRIGIDA: Força tamanhos grandes e nítidos usando !important dinâmico
+                let fontSize = '2.2rem';
+                if (totalCards > 16) fontSize = '1.6rem';
+                else if (totalCards > 8) fontSize = '2rem';
+                
+                c.style.setProperty('font-size', fontSize, 'important');
                 c.innerText = '?';
                 
                 c.onclick = () => {
@@ -379,7 +381,7 @@
             }, 1000 + Math.random() * 3000);
         }
 
-        // --- 🔲 PADRÃO MATRIZ ---
+        // --- 🔲 PADRÃO MATRI—
         function playMatriz(stage) {
             let side = Math.min(6, 2 + (level - 1));
             let size = side * side;
