@@ -1,619 +1,505 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mente Ativa - 20 Brain Games Ultra</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --purple-dark: #1a053a;
-            --purple-light: #46178f;
-            --blue: #3498db;
-            --red: #e74c3c;
-            --green: #2ecc71;
-            --yellow: #f1c40f;
-            --white: #ffffff;
-            --pink: #ff4757;
-            --orange: #ffa502;
-            --cyan: #00eaef;
-            --purple: #bf55ec;
-            --gray: #7f8c8d;
-            --brown: #a15c38;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Tente Sua Sorte - Caça-Níqueis</title>
 
-        * { box-sizing: border-box; transition: all 0.15s ease; }
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at center, var(--purple-light), var(--purple-dark));
-            color: white; margin: 0; height: 100vh; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
+<!-- Meta tags para preview social (GitHub Pages / WhatsApp / LinkedIn) -->
+<meta property="og:title" content="Tente Sua Sorte">
+<meta property="og:description" content="Jogo de demonstração estilo caça-níqueis com efeitos sonoros e pontuação fictícia.">
+<meta property="og:type" content="website">
 
-        /* TELA INICIAL */
-        #home-screen {
-            display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-            height: 100%; padding: 30px; text-align: center; overflow-y: auto;
-        }
-        .logo { font-size: 2.8rem; font-weight: 900; margin-bottom: 25px; text-shadow: 0 10px 20px rgba(0,0,0,0.4); }
-        .menu-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 12px; width: 100%; max-width: 1200px; padding-bottom: 40px;
-        }
-        .game-card {
-            background: white; color: #333; padding: 15px 10px; border-radius: 18px;
-            cursor: pointer; border-bottom: 5px solid #ccc; font-weight: 900; font-size: 0.85rem;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        .game-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .game-card span { font-size: 1.8rem; display: block; margin-bottom: 5px; }
+<!-- Favicon via Emoji (evita erro 404 no console) -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
 
-        /* INTERFACE DE JOGO */
-        #game-interface { display: none; flex: 1; position: relative; width: 100%; height: 100%; overflow: hidden; }
-        
-        .sidebar {
-            width: 280px; background: rgba(0,0,0,0.4); padding: 25px;
-            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            border-right: 2px solid rgba(255,255,255,0.1);
-        }
+<style>
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
 
-        .main-stage { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: hidden; width: 100%; }
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #250800, #8d3000, #ffb300);
+    /* Respeita áreas seguras de telas com Notch / Home Indicator no iOS */
+    padding: calc(15px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(15px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));
+}
 
-        /* GRIDS DOS JOGOS */
-        .color-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 340px; width: 100%; }
-        .pad { aspect-ratio: 1; border-radius: 20px; cursor: pointer; border: 5px solid rgba(0,0,0,0.2); width: 100%; }
-        .pad.active { transform: scale(0.95); box-shadow: 0 0 50px white; filter: brightness(1.6); }
-        
-        #opts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; width: 100%; max-width: 650px; }
-        #stroop-opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; width: 100%; max-width: 650px; }
+.game {
+    width: 850px;
+    max-width: 100%;
+    padding: 25px;
+    text-align: center;
+    border-radius: 28px;
+    background: linear-gradient(#741f00, #390b00);
+    border: 5px solid #ffd52a;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+}
 
-        .stroop-btn {
-            padding: 20px; border-radius: 16px; border: none; font-family: 'Montserrat', sans-serif;
-            font-size: 1.6rem; font-weight: 900; color: white; cursor: pointer; text-shadow: 2px 3px 5px rgba(0,0,0,0.6);
-            box-shadow: 0 6px 0 rgba(0,0,0,0.3); text-align: center; width: 100%;
-        }
-        .stroop-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 0 rgba(0,0,0,0.3); }
-        .stroop-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(0,0,0,0.3); }
+/* DESTAQUE DOS CRIADORES */
+.creators {
+    background: linear-gradient(145deg, #3d0d00, #1a0400);
+    border: 2px solid #ffd52a;
+    border-radius: 16px;
+    padding: 12px 14px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 15px rgba(255, 213, 42, 0.3);
+}
 
-        .timer-circle { width: 100px; height: 100px; border-radius: 50%; border: 5px solid white; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; font-weight: 900; color: var(--red); background: rgba(255,255,255,0.1); }
-        .btn-exit { position: absolute; top: 20px; right: 25px; background: rgba(255,255,255,0.2); border: none; color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: 900; z-index: 10; }
-        
-        .mem-card { background: var(--blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-bottom: 5px solid rgba(0,0,0,0.3); user-select: none; font-weight: 900; }
+.creators-title {
+    color: #ffd52a;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    text-shadow: 1px 1px 2px #000;
+}
 
-        .target-bubble { position: absolute; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; color: white; border: 4px solid rgba(0,0,0,0.2); box-shadow: 0 8px 15px rgba(0,0,0,0.3); animation: scaleUp 0.15s ease; }
-        @keyframes scaleUp { from { transform: scale(0); } to { transform: scale(1); } }
+.creators-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
 
-        @media (max-width: 768px) {
-            #home-screen { padding: 15px 10px; }
-            .logo { font-size: 1.5rem; margin-bottom: 15px; }
-            .menu-grid { grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
-            .game-card { padding: 10px 4px; font-size: 0.7rem; border-bottom-width: 3px; }
-            .game-card span { font-size: 1.2rem; }
-            #game-interface { flex-direction: column; }
-            .sidebar { width: 100%; height: auto; flex-direction: row; padding: 8px 12px; border-right: none; border-bottom: 2px solid rgba(255,255,255,0.1); }
-            .sidebar h1 { font-size: 0.9rem; }
-            .sidebar p { margin: 0; font-size: 0.65rem; }
-            .sidebar > div:last-child { display: none; }
-            .timer-circle { width: 40px; height: 40px; font-size: 1rem; border-width: 2px; }
-            .main-stage { padding: 10px; }
-            .btn-exit { top: 10px; right: 10px; padding: 4px 8px; font-size: 0.6rem; }
-            #opts, #stroop-opts { gap: 8px; }
-            .stroop-btn { font-size: 1.1rem; padding: 12px 8px; border-radius: 10px; }
-        }
-    </style>
+.creators-list span {
+    background: rgba(255, 213, 42, 0.15);
+    border: 1px solid #ffd52a;
+    color: #fff;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px #000;
+}
+
+h1 {
+    margin: 0;
+    color: #ffd52a;
+    font-size: clamp(22px, 5vw, 36px);
+    text-shadow: 3px 3px #481000;
+}
+
+.subtitle {
+    color: #fff;
+    margin: 5px 0 18px;
+    font-size: 14px;
+}
+
+.machine {
+    background: #1d0700;
+    padding: 18px;
+    border-radius: 20px;
+    border: 3px solid #ffca28;
+}
+
+/* 6 CAIXAS RESPONSIVAS */
+.reels {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.reel {
+    height: clamp(50px, 11vw, 95px);
+    background: #fff;
+    border-radius: 13px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: clamp(20px, 5.5vw, 45px);
+    box-shadow: inset 0 0 12px #777;
+}
+
+.spinning {
+    animation: shake .08s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translateY(-3px); }
+    50% { transform: translateY(3px); }
+    100% { transform: translateY(-3px); }
+}
+
+.win {
+    animation: win .3s infinite alternate;
+}
+
+@keyframes win {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 5px #fff;
+    }
+    to {
+        transform: scale(1.05);
+        box-shadow: 0 0 25px #ffd900;
+    }
+}
+
+.message {
+    min-height: 40px;
+    margin: 18px 0;
+    color: #fff;
+    font-weight: bold;
+    font-size: clamp(14px, 3.5vw, 18px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button {
+    width: 100%;
+    padding: 18px;
+    border: 0;
+    border-radius: 14px;
+    background: linear-gradient(#ffe85c, #ff9800);
+    color: #571900;
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #8c4000;
+    touch-action: manipulation;
+}
+
+button:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #8c4000;
+}
+
+button:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.symbols {
+    margin-top: 15px;
+    color: #ffe9a5;
+    font-size: clamp(16px, 3.5vw, 24px);
+    letter-spacing: clamp(2px, 1vw, 6px);
+}
+
+.rules {
+    margin-top: 18px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #210800;
+    color: #ffeab0;
+    font-size: clamp(10px, 2.5vw, 13px);
+    line-height: 1.6;
+    text-align: center;
+}
+
+.rules-title {
+    font-weight: bold;
+    color: #ffd52a;
+    margin-bottom: 4px;
+}
+
+.info {
+    margin-top: 10px;
+    color: #ffeab0;
+    font-size: 12px;
+}
+
+/* OTIMIZAÇÃO DISPOSITIVOS MÓVEIS PEQUENOS */
+@media (max-width: 650px) {
+    .game {
+        padding: 15px 10px;
+        border-width: 3px;
+        border-radius: 20px;
+    }
+
+    .creators {
+        padding: 8px;
+        margin-bottom: 12px;
+        border-radius: 12px;
+    }
+
+    .creators-title {
+        font-size: 10px;
+        margin-bottom: 5px;
+    }
+
+    .creators-list {
+        gap: 4px;
+    }
+
+    .creators-list span {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
+    .subtitle {
+        font-size: 11px;
+        margin: 3px 0 10px;
+    }
+
+    .machine {
+        padding: 10px;
+        border-width: 2px;
+        border-radius: 14px;
+    }
+
+    .reels {
+        gap: 4px;
+    }
+
+    .reel {
+        border-radius: 8px;
+    }
+
+    .message {
+        min-height: 32px;
+        margin: 10px 0;
+    }
+
+    button {
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .symbols {
+        margin-top: 10px;
+    }
+
+    .rules {
+        margin-top: 10px;
+        padding: 8px;
+    }
+
+    .info {
+        margin-top: 6px;
+        font-size: 10px;
+    }
+}
+</style>
 </head>
+
 <body>
 
-    <div id="home-screen">
-        <div class="logo">🧠 MEGA ACADEMIA MENTAL (20 JOGOS) ⚡</div>
-        <div class="menu-grid">
-            <div class="game-card" onclick="loadGame('cores')" style="border-color: var(--yellow)"><span>✨</span>GÊNIO DAS CORES</div>
-            <div class="game-card" onclick="loadGame('memoria')" style="border-color: var(--blue)"><span>🔢</span>PARES NUMÉRICOS</div>
-            <div class="game-card" onclick="loadGame('calculo')" style="border-color: var(--red)"><span>➕</span>CÁLCULO RÁPIDO</div>
-            <div class="game-card" onclick="loadGame('foco')" style="border-color: var(--green)"><span>🎯</span>FOCO SELETIVO</div>
-            <div class="game-card" onclick="loadGame('ordem')" style="border-color: var(--pink)"><span>🔡</span>ORDEM CRESCENTE</div>
-            <div class="game-card" onclick="loadGame('reacao')" style="border-color: #333"><span>🚀</span>VELOCIDADE LUZ</div>
-            <div class="game-card" onclick="loadGame('stroop')" style="border-color: var(--orange)"><span>🎨</span>TESTE STROOP v2</div>
-            <div class="game-card" onclick="loadGame('alvo')" style="border-color: var(--pink)"><span>🎈</span>TIRO AO ALVO SÚBITO</div>
-            <div class="game-card" onclick="loadGame('procurar')" style="border-color: var(--cyan)"><span>🔎</span>CADÊ O NÚMERO?</div>
-            <div class="game-card" onclick="loadGame('invasao')" style="border-color: var(--purple)"><span>🛸</span>INVASÃO DE EMOJIS</div>
-            <div class="game-card" onclick="loadGame('simon_inverso')" style="border-color: var(--yellow)"><span>🔴</span>SIMON ANTISSOCIAL</div>
-            <div class="game-card" onclick="loadGame('balanca')" style="border-color: var(--blue)"><span>⚖️</span>BALANÇA MENTAL</div>
-            <div class="game-card" onclick="loadGame('sinal')" style="border-color: var(--green)"><span>🛑</span>PARE OU SIGA</div>
-            <div class="game-card" onclick="loadGame('siga_luz')" style="border-color: var(--cyan)"><span>🟢</span>SIGA A LUZ</div>
-            <div class="game-card" onclick="loadGame('rotacao')" style="border-color: var(--orange)"><span>🔄</span>ROTAÇÃO MENTAL</div>
-            <div class="game-card" onclick="loadGame('proibida')" style="border-color: var(--red)"><span>🚫</span>LETRA PROIBIDA</div>
-            <div class="game-card" onclick="loadGame('blocos')" style="border-color: var(--purple)"><span>📦</span>SEQUÊNCIA BLOCOS</div>
-            <div class="game-card" onclick="loadGame('vogais')" style="border-color: var(--yellow)"><span>🔤</span>CAÇADOR DE VOGAIS</div>
-            <div class="game-card" onclick="loadGame('par_impar')" style="border-color: var(--pink)"><span>💥</span>PAR OU ÍMPAR</div>
-            <div class="game-card" onclick="loadGame('padrao')" style="border-color: var(--brown)"><span>🧩</span>DESENHO IGUAL?</div>
+<div class="game">
+
+    <div class="creators">
+        <div class="creators-title">✨ PROJETO DESENVOLVIDO POR ✨</div>
+        <div class="creators-list">
+            <span>Arthur</span>
+            <span>Diogo</span>
+            <span>Ryan</span>
+            <span>Myrella</span>
+            <span>Maria</span>
+            <span>Luara</span>
         </div>
     </div>
 
-    <div id="game-interface">
-        <button class="btn-exit" onclick="location.reload()">SAIR ➔</button>
-        <div class="sidebar">
-            <div style="text-align:center">
-                <h1 id="mode-title" style="margin:0; font-size: 1.2rem;">JOGO</h1>
-                <p>Level: <span id="lvl">1</span> | Score: <span id="scr">0</span></p>
-            </div>
-            <div class="timer-circle" id="timer">15</div>
-            <div style="background:white; color:black; padding:10px; border-radius:12px; font-weight:900; text-align:center; font-size: 0.8rem; width: 100%;">
-                FOCO ABSOLUTO
-            </div>
-        </div>
-        <div class="main-stage" id="stage"></div>
+    <h1>🍀 TENTE SUA SORTE</h1>
+
+    <div class="subtitle">
+        JOGO DE DEMONSTRAÇÃO
     </div>
 
-    <script>
-        let mode = ''; let level = 1; let score = 0; let timeLeft = 15;
-        let timerId = null; let internalSeq = []; let playerSeq = []; let gameActive = false;
-        let gameLoopInterval = null;
+    <div class="machine">
 
-        const icons = ['🐶','🚀','🧠','💎','🔥','⭐','🌈','👾','🍀','🍕','🦁','🛸','🍎','🎸','👑','🎈','🚗','🦊','🦈','🍩'];
-        const palette = [
-            { name: 'AZUL', color: 'var(--blue)' }, { name: 'VERMELHO', color: 'var(--red)' },
-            { name: 'VERDE', color: 'var(--green)' }, { name: 'AMARELO', color: 'var(--yellow)' },
-            { name: 'ROSA', color: 'var(--pink)' }, { name: 'LARANJA', color: 'var(--orange)' },
-            { name: 'CIANO', color: 'var(--cyan)' }, { name: 'ROXO', color: 'var(--purple)' }
-        ];
+        <div class="reels">
+            <div class="reel">🐯</div>
+            <div class="reel">⭐</div>
+            <div class="reel">💎</div>
+            <div class="reel">🍀</div>
+            <div class="reel">🍉</div>
+            <div class="reel">🔔</div>
+        </div>
 
-        function loadGame(m) {
-            mode = m; level = 1; score = 0;
-            document.getElementById('home-screen').style.display = 'none';
-            document.getElementById('game-interface').style.display = 'flex';
-            document.getElementById('mode-title').innerText = m.toUpperCase().replace('_', ' ');
-            initLevel();
-        }
+        <div class="message" id="message">
+            Aperte GIRAR! 🔊
+        </div>
 
-        function clearAllMechanics() {
-            clearInterval(timerId);
-            timerId = null;
-            if(gameLoopInterval) { clearInterval(gameLoopInterval); gameLoopInterval = null; }
-            const stage = document.getElementById('stage');
-            stage.innerHTML = '';
-            stage.removeAttribute('style');
-            stage.className = 'main-stage';
-        }
+        <button id="spin">
+            🎰 GIRAR
+        </button>
 
-        function initLevel() {
-            gameActive = true; 
-            timeLeft = (mode === 'alvo' || mode === 'blocos') ? 20 : (mode === 'par_impar' ? 8 : 15);
-            document.getElementById('lvl').innerText = level;
-            document.getElementById('scr').innerText = score;
+        <div class="symbols">
+            🐯 ⭐ 💎 🍀 🍉 🔔
+        </div>
+
+    </div>
+
+    <div class="rules">
+        <div class="rules-title">📊 PROBABILIDADES E PREMIAÇÕES:</div>
+        2 iguais (93,19%) → <b>+20 pts</b> | 
+        3 iguais (21,30%) → <b>+50 pts</b> | 
+        4 iguais (2,31%) → <b>+200 pts</b> | 
+        5 iguais (0,154%) → <b>+500 pts</b> | 
+        6 iguais (0,0077%) → <b>+1000 pts (JACKPOT)</b>
+    </div>
+
+    <div class="info">
+        Pontos fictícios — sorteio 100% aleatório com efeitos sonoros.
+    </div>
+
+</div>
+
+<script>
+const symbols = ["🐯", "⭐", "💎", "🍀", "🍉", "🔔"];
+let spinning = false;
+
+// Inicialização segura do AudioContext (suporte cross-browser/mobile)
+const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new AudioContextClass();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playTickSound() {
+    if (!audioCtx) return;
+    try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(600 + Math.random() * 400, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+    } catch(e) {}
+}
+
+function playWinSound(isJackpot = false) {
+    if (!audioCtx) return;
+    try {
+        const notes = isJackpot 
+            ? [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]
+            : [523.25, 659.25, 783.99, 1046.50];
+
+        notes.forEach((freq, index) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
             
-            clearAllMechanics();
-            const stage = document.getElementById('stage');
-
-            if (mode === 'cores') playCores(stage);
-            else if (mode === 'memoria') playMemoria(stage);
-            else if (mode === 'calculo') playCalculo(stage);
-            else if (mode === 'foco') playFoco(stage);
-            else if (mode === 'ordem') playOrdem(stage);
-            else if (mode === 'reacao') playReacao(stage);
-            else if (mode === 'stroop') playStroop(stage);
-            else if (mode === 'alvo') playAlvo(stage);
-            else if (mode === 'procurar') playProcurar(stage);
-            else if (mode === 'invasao') playInvasao(stage);
-            else if (mode === 'simon_inverso') playSimonInverso(stage);
-            else if (mode === 'balanca') playBalanca(stage);
-            else if (mode === 'sinal') playSinal(stage);
-            else if (mode === 'siga_luz') playSigaLuz(stage);
-            else if (mode === 'rotacao') playRotacao(stage);
-            else if (mode === 'proibida') playProibida(stage);
-            else if (mode === 'blocos') playBlocos(stage);
-            else if (mode === 'vogais') playVogais(stage);
-            else if (mode === 'par_impar') playParImpar(stage);
-            else if (mode === 'padrao') playPadrao(stage);
-
-            startTimer();
-        }
-
-        // --- 1. GÊNIO DAS CORES ---
-        function playCores(stage) {
-            stage.innerHTML = `<div class="color-grid"><div class="pad" style="background:var(--blue)"></div><div class="pad" style="background:var(--red)"></div><div class="pad" style="background:var(--green)"></div><div class="pad" style="background:var(--yellow)"></div></div>`;
-            internalSeq = Array.from({length: level + 1}, () => Math.floor(Math.random() * 4)); playerSeq = [];
-            setTimeout(runSequence, 400);
-            const pads = stage.querySelectorAll('.pad');
-            pads.forEach((p, idx) => { p.onclick = () => handleColorClick(p, idx); });
-        }
-        async function runSequence() {
-            gameActive = false; const pads = document.querySelectorAll('.pad');
-            for (let id of internalSeq) { await new Promise(r => setTimeout(r, 450)); if(pads[id]) { pads[id].classList.add('active'); setTimeout(() => pads[id].classList.remove('active'), 300); } }
-            gameActive = true;
-        }
-        function handleColorClick(el, id) {
-            if (!gameActive) return; el.classList.add('active'); setTimeout(() => el.classList.remove('active'), 150); playerSeq.push(id);
-            if (playerSeq[playerSeq.length-1] !== internalSeq[playerSeq.length-1]) { alert("Sequência Errada!"); location.reload(); }
-            else if (playerSeq.length === internalSeq.length) { score += 50; level++; setTimeout(initLevel, 600); }
-        }
-
-        // --- 2. PARES NUMÉRICOS (TOTALMENTE CORRIGIDO E BLINDADO) ---
-        function playMemoria(stage) {
-            let pairs = Math.min(10, 1 + level); let totalCards = pairs * 2;
-            let currentIcons = icons.slice(0, pairs);
-            // Monta o deck com pares estruturados { icon, id } para manter referências estáveis
-            let deck = [];
-            currentIcons.forEach((icon) => {
-                deck.push({ item: icon });
-                deck.push({ item: icon });
-            });
-            deck.sort(() => Math.random() - 0.5);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + index * 0.08);
             
-            let flipped = [];
-            let cols = totalCards % 5 === 0 ? 5 : 4;
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px; text-align:center;">ENCONTRE OS PARES!</p><div id="mem-grid" style="display:grid; grid-template-columns:repeat(${cols}, 1fr); gap:10px; width:100%; max-width:400px;"></div>`;
-            const grid = stage.querySelector('#mem-grid');
+            gain.gain.setValueAtTime(0.6, audioCtx.currentTime + index * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.08 + 0.35);
             
-            deck.forEach((card, index) => {
-                const c = document.createElement('div'); 
-                c.className = 'mem-card'; 
-                c.style.aspectRatio = '1'; 
-                c.style.fontSize = '1.5rem'; 
-                c.innerText = index + 1; // Número exibido na frente da carta
-                c.setAttribute('data-card-id', index + 1); // Guarda o número fixo e imutável
-
-                c.onclick = () => {
-                    if (flipped.length < 2 && !c.classList.contains('flipped') && !c.classList.contains('matched')) {
-                        c.classList.add('flipped'); 
-                        c.innerText = card.item; // Mostra o emoji escondido
-                        c.style.background = 'white'; 
-                        c.style.color = 'black'; 
-                        flipped.push({ element: c, val: card.item });
-                        
-                        if (flipped.length === 2) {
-                            if (flipped[0].val === flipped[1].val) { 
-                                score += 20; 
-                                flipped[0].element.classList.add('matched');
-                                flipped[1].element.classList.add('matched');
-                                flipped = []; 
-                                if (grid.querySelectorAll('.matched').length === deck.length) { 
-                                    level++; 
-                                    setTimeout(initLevel, 800); 
-                                } 
-                            } else { 
-                                gameActive = false; // Bloqueia cliques temporariamente
-                                setTimeout(() => { 
-                                    flipped.forEach(x => { 
-                                        x.element.classList.remove('flipped'); 
-                                        // Restaura exatamente o número fixado de fábrica no atributo, sem alterar as posições
-                                        x.element.innerText = x.element.getAttribute('data-card-id'); 
-                                        x.element.style.background = 'var(--blue)'; 
-                                        x.element.style.color = 'white'; 
-                                    }); 
-                                    flipped = []; 
-                                    gameActive = true;
-                                }, 800); 
-                            }
-                        }
-                    }
-                };
-                grid.appendChild(c);
-            });
-        }
-
-        // --- 3. CÁLCULO RÁPIDO ---
-        function playCalculo(stage) {
-            let a = Math.floor(Math.random() * (5 * level)) + 2, b = Math.floor(Math.random() * (5 * level)) + 2; let res = a + b;
-            stage.innerHTML = `<h1 style="font-size:3.5rem; margin:0 0 20px 0;">${a} + ${b} = ?</h1><div id="opts"></div>`;
-            [res, res+2, res-1, res+4].sort(() => Math.random()-0.5).forEach(o => {
-                const btn = document.createElement('button'); btn.className = 'stroop-btn'; btn.style.background = 'var(--blue)'; btn.innerText = o;
-                btn.onclick = () => { if(o === res) { score += 30; level++; initLevel(); } else { alert("Errado!"); location.reload(); } };
-                stage.querySelector('#opts').appendChild(btn);
-            });
-        }
-
-        // --- 4. FOCO SELETIVO ---
-        function playFoco(stage) {
-            let chars = ['M', 'W', 'N']; let main = chars[level % 3], intruder = 'H';
-            let wrapper = document.createElement('div'); wrapper.style.display = 'flex'; wrapper.style.flexWrap = 'wrap'; wrapper.style.justifyContent = 'center'; wrapper.style.maxWidth = '450px';
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px;">ACHE A LETRA '${intruder}'</p>`;
-            let total = Math.min(120, 35 + (level*5)); let idxIntruder = Math.floor(Math.random()*total);
-            for(let i=0; i<total; i++) {
-                const d = document.createElement('span'); d.style.fontSize = '2rem'; d.style.padding = '5px'; d.style.cursor = 'pointer'; d.innerText = main;
-                if(i === idxIntruder) { d.innerText = intruder; d.onclick = () => { score += 40; level++; initLevel(); } }
-                else { d.onclick = () => { alert("Incorreto!"); location.reload(); } }
-                wrapper.appendChild(d);
-            }
-            stage.appendChild(wrapper);
-        }
-
-        // --- 5. ORDEM CRESCENTE ---
-        function playOrdem(stage) {
-            let nums = Array.from({length: Math.min(12, 3+level)}, () => Math.floor(Math.random()*100)); let sorted = [...nums].sort((a,b) => a-b); let idx = 0;
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px;">CLIQUE EM ORDEM CRESCENTE!</p><div id="opts"></div>`;
-            nums.forEach(n => {
-                const b = document.createElement('div'); b.className = 'mem-card'; b.style.width='60px'; b.style.height='60px'; b.style.fontSize='1.2rem'; b.innerText = n;
-                b.onclick = () => { if(n === sorted[idx]) { b.style.background = 'var(--gray)'; b.style.opacity = '0.4'; b.style.pointerEvents = 'none'; idx++; if(idx === nums.length) { score += 50; level++; initLevel(); } } else { alert("Ordem errada!"); location.reload(); } };
-                stage.querySelector('#opts').appendChild(b);
-            });
-        }
-
-        // --- 6. VELOCIDADE LUZ ---
-        function playReacao(stage) {
-            stage.innerHTML = '<h1>AGUARDE O VERDE...</h1>';
-            setTimeout(() => {
-                if(mode !== 'reacao') return;
-                stage.innerHTML = '<div id="target" style="width:200px;height:200px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 0 30px var(--green)"><h1>CLIQUE!</h1></div>';
-                stage.querySelector('#target').onclick = () => { score += 100; level++; initLevel(); };
-            }, 1000 + Math.random() * 2000);
-        }
-
-        // --- 7. TESTE STROOP ---
-        function playStroop(stage) {
-            let wordIdx = Math.floor(Math.random() * palette.length);
-            let colorIdx;
-            do { colorIdx = Math.floor(Math.random() * palette.length); } while(colorIdx === wordIdx);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
             
-            let wordItem = palette[wordIdx];
-            let colorItem = palette[colorIdx];
-            
-            stage.innerHTML = `
-                <p style="font-size:1.3rem; font-weight:700; margin-bottom:5px;">QUAL A COR DO TEXTO?</p>
-                <h1 style="font-size:4.5rem; color:${colorItem.color}; text-shadow:3px 5px 15px rgba(0,0,0,0.7); margin:10px 0; font-weight:900;">${wordItem.name}</h1>
-                <div id="stroop-opts"></div>`;
-            
-            let options = [colorItem]; 
-            let remaining = palette.filter(item => item.color !== colorItem.color).sort(() => Math.random() - 0.5);
-            for(let i = 0; i < 3; i++) options.push(remaining[i]);
-            options.sort(() => Math.random() - 0.5);
-            
-            const container = stage.querySelector('#stroop-opts');
-            options.forEach(opt => {
-                const btn = document.createElement('button'); btn.className = 'stroop-btn'; 
-                btn.style.background = palette[Math.floor(Math.random() * palette.length)].color;
-                btn.innerText = opt.name;
-                btn.onclick = () => {
-                    if(opt.color === colorItem.color) { score += 35; level++; initLevel(); } 
-                    else { alert("Incorreto! Foque apenas na COR da palavra."); location.reload(); }
-                };
-                container.appendChild(btn);
-            });
-        }
+            osc.start(audioCtx.currentTime + index * 0.08);
+            osc.stop(audioCtx.currentTime + index * 0.08 + 0.35);
+        });
+    } catch(e) {}
+}
 
-        // --- 8. TIRO AO ALVO SÚBITO ---
-        function playAlvo(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px;">CLIQUE NAS BOLAS! FUJA DA VERMELHA (❌)!</p>`;
-            let targetsHit = 0; let targetGoal = 3 + level;
-            function spawnBubble() {
-                if(mode !== 'alvo' || targetsHit >= targetGoal) return;
-                const bubble = document.createElement('div'); bubble.className = 'target-bubble';
-                let isBomb = Math.random() < 0.25; let size = Math.max(55, 100 - (level * 3));
-                bubble.style.width = size + 'px'; bubble.style.height = size + 'px';
-                bubble.style.top = Math.random() * (stage.clientHeight - size - 60) + 40 + 'px';
-                bubble.style.left = Math.random() * (stage.clientWidth - size - 20) + 10 + 'px';
-                if (isBomb) {
-                    bubble.style.background = 'var(--red)'; bubble.innerText = '❌';
-                    bubble.onclick = () => { alert("Você explodiu a bomba!"); location.reload(); };
-                } else {
-                    bubble.style.background = ['var(--blue)', 'var(--green)', 'var(--cyan)', 'var(--purple)'][Math.floor(Math.random()*4)]; bubble.innerText = '🎯';
-                    bubble.onclick = (e) => { e.stopPropagation(); bubble.remove(); targetsHit++; score += 15; document.getElementById('scr').innerText = score; if(targetsHit >= targetGoal) { level++; initLevel(); } };
+const reels = document.querySelectorAll(".reel");
+const message = document.getElementById("message");
+const button = document.getElementById("spin");
+
+function randomSymbol() {
+    return symbols[Math.floor(Math.random() * symbols.length)];
+}
+
+function spinReel(reel, time) {
+    return new Promise(resolve => {
+        reel.classList.add("spinning");
+
+        const interval = setInterval(() => {
+            reel.textContent = randomSymbol();
+            playTickSound();
+        }, 80);
+
+        setTimeout(() => {
+            clearInterval(interval);
+            const result = randomSymbol();
+            reel.textContent = result;
+            reel.classList.remove("spinning");
+            resolve(result);
+        }, time);
+    });
+}
+
+function spin() {
+    if (spinning) return;
+
+    initAudio();
+
+    spinning = true;
+    button.disabled = true;
+
+    reels.forEach(reel => {
+        reel.classList.remove("win");
+    });
+
+    message.textContent = "Girando... 🎰";
+
+    const promises = [...reels].map((reel, index) => {
+        return spinReel(reel, 1000 + index * 250);
+    });
+
+    Promise.all(promises).then(results => {
+        const counts = {};
+
+        results.forEach(symbol => {
+            counts[symbol] = (counts[symbol] || 0) + 1;
+        });
+
+        const maxEqual = Math.max(...Object.values(counts));
+
+        const rewards = {
+            2: 20,
+            3: 50,
+            4: 200,
+            5: 500,
+            6: 1000
+        };
+
+        const points = rewards[maxEqual] || 0;
+
+        if (maxEqual >= 2) {
+            playWinSound(maxEqual === 6);
+            message.textContent = maxEqual === 6 
+                ? "👑 JACKPOT! 6 IGUAIS! +1000 PONTOS! 👑"
+                : `🔥 ${maxEqual} IGUAIS! +${points} PONTOS! 🔥`;
+
+            const winningSymbol = Object.keys(counts).find(
+                symbol => counts[symbol] === maxEqual
+            );
+
+            reels.forEach(reel => {
+                if (reel.textContent === winningSymbol) {
+                    reel.classList.add("win");
                 }
-                stage.appendChild(bubble);
-                setTimeout(() => { if(bubble) bubble.remove(); }, Math.max(700, 2000 - (level * 100)));
-            }
-            gameLoopInterval = setInterval(spawnBubble, Math.max(350, 900 - (level * 40)));
-        }
-
-        // --- 9. CADÊ O NÚMERO? ---
-        function playProcurar(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px;">ENCONTRE O ÚNICO NÚMERO ESCONDIDO!</p><div id="opts"></div>`;
-            let pool = ['X','Y','Z','W','K','P','H','A','#','$','&','@','?','*','%'];
-            let hiddenNumber = Math.floor(Math.random() * 10).toString();
-            let totalCells = Math.min(36, 16 + (level * 4));
-            let items = Array.from({length: totalCells - 1}, () => pool[Math.floor(Math.random()*pool.length)]);
-            items.push(hiddenNumber); items.sort(() => Math.random() - 0.5);
-            items.forEach(item => {
-                const cell = document.createElement('div'); cell.className = 'mem-card'; cell.style.width = '50px'; cell.style.height = '50px'; cell.style.fontSize = '1.3rem'; cell.innerText = item;
-                cell.onclick = () => { if (item === hiddenNumber) { score += 40; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
-                stage.querySelector('#opts').appendChild(cell);
             });
+        } else {
+            message.textContent = "❌ Nenhuma combinação! (Todos diferentes)";
         }
 
-        // --- 10. INVASÃO DE EMOJIS ---
-        function playInvasao(stage) {
-            let baseEmoji = ['🐱','🍏','🎈','🚗','⭐','🍕'][level % 6]; let intruderEmoji = ['🐶','🍎','🎁','🚲','🔥','🍔'][level % 6];
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px;">ACHE O INTRUSO!</p><div id="opts" style="gap:10px; max-width:400px;"></div>`;
-            let totalCount = Math.min(60, 20 + (level * 4)); let indexIntruder = Math.floor(Math.random() * totalCount);
-            for(let i=0; i<totalCount; i++) {
-                const box = document.createElement('span'); box.style.fontSize = '2.3rem'; box.style.cursor = 'pointer'; box.innerText = (i === indexIntruder) ? intruderEmoji : baseEmoji;
-                box.onclick = () => { if(i === indexIntruder) { score += 45; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
-                stage.querySelector('#opts').appendChild(box);
-            }
-        }
+        spinning = false;
+        button.disabled = false;
+    });
+}
 
-        // --- 11. SIMON ANTISSOCIAL ---
-        function playSimonInverso(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px;">REPITA NA <span style="color:var(--cyan)">ORDEM INVERSA</span>!</p><div class="color-grid"><div class="pad" style="background:var(--orange)"></div><div class="pad" style="background:var(--pink)"></div><div class="pad" style="background:var(--cyan)"></div><div class="pad" style="background:var(--purple)"></div></div>`;
-            internalSeq = Array.from({length: Math.min(7, 2 + Math.floor(level/2))}, () => Math.floor(Math.random() * 4)); playerSeq = [];
-            const pads = stage.querySelectorAll('.pad');
-            async function showInverseSeq() {
-                gameActive = false;
-                for (let id of internalSeq) { await new Promise(r => setTimeout(r, 600)); if(pads[id]) pads[id].classList.add('active'); setTimeout(() => { if(pads[id]) pads[id].classList.remove('active') }, 400); }
-                gameActive = true;
-            }
-            setTimeout(showInverseSeq, 500);
-            pads.forEach((pad, idx) => {
-                pad.onclick = () => {
-                    if(!gameActive) return; pad.classList.add('active'); setTimeout(() => pad.classList.remove('active'), 200); playerSeq.push(idx);
-                    let targetIdx = internalSeq.length - playerSeq.length;
-                    if(playerSeq[playerSeq.length-1] !== internalSeq[targetIdx]) { alert("Ordem inversa incorreta!"); location.reload(); }
-                    else if (playerSeq.length === internalSeq.length) { score += 60; level++; setTimeout(initLevel, 800); }
-                };
-            });
-        }
+// Eventos ajustados para Mobile (suporte a toque sem atraso)
+button.addEventListener("pointerdown", initAudio, { once: true });
+button.addEventListener("click", spin);
+</script>
 
-        // --- 12. BALANÇA MENTAL ---
-        function playBalanca(stage) {
-            let n1 = Math.floor(Math.random()*9) + level, n2 = Math.floor(Math.random()*9) + 2;
-            let n3 = Math.floor(Math.random()*9) + level, n4 = Math.floor(Math.random()*9) + 2;
-            let leftVal = n1 + n2, rightVal = n3 + n4; if(leftVal === rightVal) leftVal += 3;
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:20px;">QUEM É MAIOR?</p><div id="stroop-opts"><button id="side-l" class="stroop-btn" style="background:var(--purple-light);">${n1} + ${n2}</button><button id="side-r" class="stroop-btn" style="background:var(--purple-light);">${n3} + ${n4}</button></div>`;
-            stage.querySelector('#side-l').onclick = () => { if(leftVal > rightVal) { score += 30; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
-            stage.querySelector('#side-r').onclick = () => { if(rightVal > leftVal) { score += 30; level++; initLevel(); } else { alert("Incorreto!"); location.reload(); } };
-        }
-
-        // --- 13. PARE OU SIGA ---
-        function playSinal(stage) {
-            let config = [
-                { txt: 'CLIQUE', color: 'var(--green)', valid: true }, { txt: 'PARE', color: 'var(--red)', valid: false },
-                { txt: 'CLIQUE', color: 'var(--red)', valid: false }, { txt: 'PARE', color: 'var(--green)', valid: false }
-            ];
-            let activeConfig = config[Math.floor(Math.random() * config.length)];
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px;">SÓ CLIQUE SE FOR <span style="color:var(--green)">"CLIQUE" VERDE</span>!</p><h1 style="font-size:4.5rem; color:${activeConfig.color}; margin:20px 0; font-weight:900; background:rgba(0,0,0,0.2); padding:10px 40px; border-radius:15px;">${activeConfig.txt}</h1><div id="stroop-opts"><button id="action-btn" class="stroop-btn" style="background:var(--blue)">CLICAR</button><button id="skip-btn" class="stroop-btn" style="background:var(--gray)">IGNORAR</button></div>`;
-            stage.querySelector('#action-btn').onclick = () => { if(activeConfig.valid) { score += 40; level++; initLevel(); } else { alert("Erro de impulso!"); location.reload(); } };
-            stage.querySelector('#skip-btn').onclick = () => { if(!activeConfig.valid) { score += 40; level++; initLevel(); } else { alert("Você devia ter clicado!"); location.reload(); } };
-        }
-
-        // --- 14. SIGA A LUZ ---
-        function playSigaLuz(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:15px">CLIQUE RÁPIDO NO CÍRCULO VERDE ACESO!</p><div id="opts" style="max-width:360px;"></div>`;
-            const container = stage.querySelector('#opts');
-            let totalCircles = 9; let chosenOne = Math.floor(Math.random() * totalCircles);
-            for(let i=0; i<totalCircles; i++) {
-                const circ = document.createElement('div'); circ.className = 'pad'; circ.style.width = '80px'; circ.style.borderRadius = '50%';
-                if(i === chosenOne) {
-                    circ.style.background = 'var(--green)'; circ.style.boxShadow = '0 0 20px var(--green)';
-                    circ.onclick = () => { score += 35; level++; initLevel(); };
-                } else {
-                    circ.style.background = 'rgba(255,255,255,0.1)';
-                    circ.onclick = () => { alert("Errou o alvo aceso!"); location.reload(); };
-                }
-                container.appendChild(circ);
-            }
-        }
-
-        // --- 15. ROTAÇÃO MENTAL ---
-        function playRotacao(stage) {
-            const dirs = [
-                { arrow: '⬆️', name: 'CIMA' }, { arrow: '⬇️', name: 'BAIXO' },
-                { arrow: '⬅️', name: 'ESQUERDA' }, { arrow: '➡️', name: 'DIREITA' }
-            ];
-            let current = dirs[Math.floor(Math.random() * dirs.length)];
-            let invertCommand = Math.random() < 0.5;
-            
-            stage.innerHTML = `
-                <p style="font-weight:700; margin-bottom:10px;">ATENÇÃO À ORDEM:</p>
-                <h2 style="background:var(--pink); padding:5px 20px; border-radius:10px; margin:0;">${invertCommand ? 'CLIQUE NO OPOSTO!' : 'CLIQUE NO CORRETO!'}</h2>
-                <h1 style="font-size:5rem; margin:15px 0;">${current.arrow}</h1>
-                <div id="stroop-opts"></div>`;
-                
-            const container = stage.querySelector('#stroop-opts');
-            dirs.forEach(d => {
-                const btn = document.createElement('button'); btn.className = 'stroop-btn'; btn.style.background = 'var(--blue)'; btn.innerText = d.name;
-                btn.onclick = () => {
-                    let isCorrect = (!invertCommand && d.name === current.name) || (invertCommand && ((current.name === 'CIMA' && d.name === 'BAIXO') || (current.name === 'BAIXO' && d.name === 'CIMA') || (current.name === 'ESQUERDA' && d.name === 'DIREITA') || (current.name === 'DIREITA' && d.name === 'ESQUERDA')));
-                    if(isCorrect) { score += 40; level++; initLevel(); } else { alert("Ação de comando errada!"); location.reload(); }
-                };
-                container.appendChild(btn);
-            });
-        }
-
-        // --- 16. LETRA PROIBIDA ---
-        function playProhibida(stage) {
-            let alphabet = ['A','B','C','D','E','F','G','H','L','P','R','S','T'];
-            let forbidden = 'X'; let currentLetter = Math.random() < 0.35 ? forbidden : alphabet[Math.floor(Math.random()*alphabet.length)];
-            
-            stage.innerHTML = `
-                <p style="font-weight:700; text-align:center;">SE APARECER <span style="color:var(--red)">'${forbidden}'</span> VOCÊ DEVE BLOQUEAR!<br>CASO CONTRÁRIO, AVANCE!</p>
-                <h1 style="font-size:6rem; margin:20px; color:var(--cyan)">${currentLetter}</h1>
-                <div id="stroop-opts">
-                    <button id="go" class="stroop-btn" style="background:var(--green)">AVANÇAR</button>
-                    <button id="block" class="stroop-btn" style="background:var(--red)">BLOQUEAR</button>
-                </div>`;
-            
-            stage.querySelector('#go').onclick = () => {
-                if(currentLetter !== forbidden) { score += 30; level++; initLevel(); } else { alert("Você avançou na letra Proibida!"); location.reload(); }
-            };
-            stage.querySelector('#block').onclick = () => {
-                if(currentLetter === forbidden) { score += 50; level++; initLevel(); } else { alert("Você bloqueou uma letra segura!"); location.reload(); }
-            };
-        }
-
-        // --- 17. SEQUÊNCIA BLOCOS ---
-        function playBlocos(stage) {
-            stage.innerHTML = `<p style="font-weight:700; margin-bottom:10px;">DECORE E REPITA OS BLOCOS ACESOS!</p><div class="color-grid" id="block-grid"><div class="pad" style="background:var(--gray)"></div><div class="pad" style="background:var(--gray)"></div><div class="pad" style="background:var(--gray)"></div><div class="pad" style="background:var(--gray)"></div></div>`;
-            internalSeq = Array.from({length: Math.min(6, 2 + Math.floor(level/3))}, () => Math.floor(Math.random() * 4)); playerSeq = [];
-            const pads = stage.querySelectorAll('.pad');
-            
-            async function triggerBlocks() {
-                gameActive = false;
-                for(let id of internalSeq) { await new Promise(r=>setTimeout(r,500)); if(pads[id]) { pads[id].style.background = 'var(--yellow)'; setTimeout(() => pads[id].style.background='var(--gray)', 350); } }
-                gameActive = true;
-            }
-            setTimeout(triggerBlocks, 600);
-            pads.forEach((p, idx) => {
-                p.onclick = () => {
-                    if(!gameActive) return; p.style.background = 'var(--cyan)'; setTimeout(()=>p.style.background='var(--gray)', 150);
-                    playerSeq.push(idx);
-                    if(playerSeq[playerSeq.length-1] !== internalSeq[playerSeq.length-1]) { alert("Bloco incorreto na sequência!"); location.reload(); }
-                    else if(playerSeq.length === internalSeq.length) { score += 50; level++; setTimeout(initLevel, 600); }
-                };
-            });
-        }
-
-        // --- 18. CAÇADOR DE VOGAIS ---
-        function playVogais(stage) {
-            let vogals = ['A','E','I','O','U']; let consonants = ['B','C','D','F','G','H','J','K','L','M','N','P','Q','R','S'];
-            let isVogal = Math.random() < 0.5;
-            let chosenChar = isVogal ? vogals[Math.floor(Math.random()*5)] : consonants[Math.floor(Math.random()*15)];
-            
-            stage.innerHTML = `
-                <p style="font-weight:700;">FILTRO COGNITIVO: SÓ CLIQUE SE FOR VOGAL!</p>
-                <h1 style="font-size:6.5rem; margin:20px; font-weight:900;">${chosenChar}</h1>
-                <div id="stroop-opts">
-                    <button id="btn-v" class="stroop-btn" style="background:var(--blue)">CAPTURAR (VOGAL)</button>
-                    <button id="btn-c" class="stroop-btn" style="background:var(--gray)">IGNORAR (CONSOANTE)</button>
-                </div>`;
-                
-            stage.querySelector('#btn-v').onclick = () => { if(isVogal) { score += 30; level++; initLevel(); } else { alert("Incorreto! Isso é uma consoante."); location.reload(); } };
-            stage.querySelector('#btn-c').onclick = () => { if(!isVogal) { score += 30; level++; initLevel(); } else { alert("Você ignorou uma Vogal legítima!"); location.reload(); } };
-        }
-
-        // --- 19. PAR OU ÍMPAR ---
-        function playParImpar(stage) {
-            let num = Math.floor(Math.random() * 100) + 1; let isPar = (num % 2 === 0);
-            stage.innerHTML = `
-                <p style="font-weight:700; color:var(--pink);">CRONÔMETRO ACELERADO! SEJA RÁPIDO!</p>
-                <h1 style="font-size:5.5rem; margin:15px 0;">${num}</h1>
-                <div id="stroop-opts">
-                    <button id="par" class="stroop-btn" style="background:var(--blue)">É PAR</button>
-                    <button id="impar" class="stroop-btn" style="background:var(--orange)">É ÍMPAR</button>
-                </div>`;
-            stage.querySelector('#par').onclick = () => { if(isPar) { score += 35; level++; initLevel(); } else { alert("Errado! O número era ÍMPAR."); location.reload(); } };
-            stage.querySelector('#impar').onclick = () => { if(!isPar) { score += 35; level++; initLevel(); } else { alert("Errado! O número era PAR."); location.reload(); } };
-        }
-
-        // --- 20. DESENHO IGUAL? ---
-        function playPadrao(stage) {
-            let syms = ['💎','🔥','⭐','🍀','👾','⚡'];
-            let s1 = syms[Math.floor(Math.random()*syms.length)];
-            let s2 = syms[Math.floor(Math.random()*syms.length)];
-            let s4 = Math.random() < 0.5 ? s2 : syms[Math.floor(Math.random()*syms.length)];
-            
-            stage.innerHTML = `
-                <p style="font-weight:700; margin-bottom:15px;">AS DUAS DUPLAS SÃO IGUAIS?</p>
-                <div style="display:flex; gap:50px; font-size:3.5rem; margin-bottom:25px; background:rgba(0,0,0,0.2); padding:15px; border-radius:15px;">
-                    <div>${s1}${s2}</div>
-                    <div>${s1}${s4}</div>
-                </div>
-                <div id="stroop-opts">
-                    <button id="eq" class="stroop-btn" style="background:var(--green)">SIM, IGUAIS</button>
-                    <button id="diff" class="stroop-btn" style="background:var(--red)">NÃO, DIFERENTES</button>
-                </div>`;
-                
-            stage.querySelector('#eq').onclick = () => { if(s2 === s4) { score += 40; level++; initLevel(); } else { alert("Erro de conferência visual! Eram diferentes."); location.reload(); } };
-            stage.querySelector('#diff').onclick = () => { if(s2 !== s4) { score += 40; level++; initLevel(); } else { alert("Erro! Elas eram perfeitamente iguais."); location.reload(); } };
-        }
-
-        // --- ENGINE DO RELÓGIO ---
-        function startTimer() {
-            document.getElementById('timer').innerText = timeLeft;
-            timerId = setInterval(() => {
-                timeLeft--; document.getElementById('timer').innerText = timeLeft;
-                if (timeLeft <= 0) { clearAllMechanics(); alert("O tempo esgotou! Pontuação acumulada: " + score); location.reload(); }
-            }, 1000);
-        }
-    </script>
 </body>
 </html>
