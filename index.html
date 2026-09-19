@@ -1,505 +1,556 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Tente Sua Sorte - Caça-Níqueis</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafio da Rafaela</title>
 
-<!-- Meta tags para preview social (GitHub Pages / WhatsApp / LinkedIn) -->
-<meta property="og:title" content="Tente Sua Sorte">
-<meta property="og:description" content="Jogo de demonstração estilo caça-níqueis com efeitos sonoros e pontuação fictícia.">
-<meta property="og:type" content="website">
+  <!-- Google Fonts: Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 
-<!-- Favicon via Emoji (evita erro 404 no console) -->
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎰</text></svg>">
-
-<style>
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-body {
-    margin: 0;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #250800, #8d3000, #ffb300);
-    /* Respeita áreas seguras de telas com Notch / Home Indicator no iOS */
-    padding: calc(15px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) calc(15px + env(safe-area-inset-bottom)) calc(10px + env(safe-area-inset-left));
-}
-
-.game {
-    width: 850px;
-    max-width: 100%;
-    padding: 25px;
-    text-align: center;
-    border-radius: 28px;
-    background: linear-gradient(#741f00, #390b00);
-    border: 5px solid #ffd52a;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.6);
-}
-
-/* DESTAQUE DOS CRIADORES */
-.creators {
-    background: linear-gradient(145deg, #3d0d00, #1a0400);
-    border: 2px solid #ffd52a;
-    border-radius: 16px;
-    padding: 12px 14px;
-    margin-bottom: 20px;
-    box-shadow: 0 0 15px rgba(255, 213, 42, 0.3);
-}
-
-.creators-title {
-    color: #ffd52a;
-    font-size: 13px;
-    font-weight: bold;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    text-shadow: 1px 1px 2px #000;
-}
-
-.creators-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
-}
-
-.creators-list span {
-    background: rgba(255, 213, 42, 0.15);
-    border: 1px solid #ffd52a;
-    color: #fff;
-    padding: 5px 14px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px #000;
-}
-
-h1 {
-    margin: 0;
-    color: #ffd52a;
-    font-size: clamp(22px, 5vw, 36px);
-    text-shadow: 3px 3px #481000;
-}
-
-.subtitle {
-    color: #fff;
-    margin: 5px 0 18px;
-    font-size: 14px;
-}
-
-.machine {
-    background: #1d0700;
-    padding: 18px;
-    border-radius: 20px;
-    border: 3px solid #ffca28;
-}
-
-/* 6 CAIXAS RESPONSIVAS */
-.reels {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-
-.reel {
-    height: clamp(50px, 11vw, 95px);
-    background: #fff;
-    border-radius: 13px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: clamp(20px, 5.5vw, 45px);
-    box-shadow: inset 0 0 12px #777;
-}
-
-.spinning {
-    animation: shake .08s infinite;
-}
-
-@keyframes shake {
-    0% { transform: translateY(-3px); }
-    50% { transform: translateY(3px); }
-    100% { transform: translateY(-3px); }
-}
-
-.win {
-    animation: win .3s infinite alternate;
-}
-
-@keyframes win {
-    from {
-        transform: scale(1);
-        box-shadow: 0 0 5px #fff;
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Nunito', 'sans-serif'],
+          },
+          colors: {
+            lavender: {
+              50: '#f8f8fe',
+              100: '#f0f1fd',
+              200: '#e1e3fb',
+              300: '#c7caf7',
+              400: '#a3a6f1',
+              500: '#7e81ea',
+              600: '#5e61df',
+            },
+            pastelPink: {
+              50: '#fff5f8',
+              100: '#fce7f0',
+              200: '#fbcfe3',
+              300: '#f9a8ce',
+              400: '#f472b6',
+            }
+          }
+        }
+      }
     }
-    to {
-        transform: scale(1.05);
-        box-shadow: 0 0 25px #ffd900;
-    }
-}
+  </script>
 
-.message {
-    min-height: 40px;
-    margin: 18px 0;
-    color: #fff;
-    font-weight: bold;
-    font-size: clamp(14px, 3.5vw, 18px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-button {
-    width: 100%;
-    padding: 18px;
-    border: 0;
-    border-radius: 14px;
-    background: linear-gradient(#ffe85c, #ff9800);
-    color: #571900;
-    font-size: clamp(18px, 4vw, 24px);
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 5px 0 #8c4000;
-    touch-action: manipulation;
-}
-
-button:active {
-    transform: translateY(4px);
-    box-shadow: 0 1px 0 #8c4000;
-}
-
-button:disabled {
-    opacity: .5;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.symbols {
-    margin-top: 15px;
-    color: #ffe9a5;
-    font-size: clamp(16px, 3.5vw, 24px);
-    letter-spacing: clamp(2px, 1vw, 6px);
-}
-
-.rules {
-    margin-top: 18px;
-    padding: 12px;
-    border-radius: 10px;
-    background: #210800;
-    color: #ffeab0;
-    font-size: clamp(10px, 2.5vw, 13px);
-    line-height: 1.6;
-    text-align: center;
-}
-
-.rules-title {
-    font-weight: bold;
-    color: #ffd52a;
-    margin-bottom: 4px;
-}
-
-.info {
-    margin-top: 10px;
-    color: #ffeab0;
-    font-size: 12px;
-}
-
-/* OTIMIZAÇÃO DISPOSITIVOS MÓVEIS PEQUENOS */
-@media (max-width: 650px) {
-    .game {
-        padding: 15px 10px;
-        border-width: 3px;
-        border-radius: 20px;
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #f5f3ff 0%, #fce7f0 50%, #eef2ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 1rem;
+      user-select: none;
+      -webkit-user-select: none;
     }
 
-    .creators {
-        padding: 8px;
-        margin-bottom: 12px;
-        border-radius: 12px;
+    /* Soft shadow card container */
+    .app-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 20px 40px -15px rgba(126, 129, 234, 0.15), 0 0 20px rgba(244, 114, 182, 0.1);
     }
 
-    .creators-title {
-        font-size: 10px;
-        margin-bottom: 5px;
+    /* Smooth transition between screens */
+    .fade-in {
+      animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .creators-list {
-        gap: 4px;
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
-    .creators-list span {
-        padding: 3px 8px;
-        font-size: 10px;
+    /* Shake animation for wrong inputs */
+    .shake {
+      animation: shake 0.4s ease-in-out;
     }
 
-    .subtitle {
-        font-size: 11px;
-        margin: 3px 0 10px;
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
     }
 
-    .machine {
-        padding: 10px;
-        border-width: 2px;
-        border-radius: 14px;
+    /* Custom door hover effects */
+    .door-card {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .reels {
-        gap: 4px;
+    .door-card:active {
+      transform: scale(0.95);
     }
-
-    .reel {
-        border-radius: 8px;
-    }
-
-    .message {
-        min-height: 32px;
-        margin: 10px 0;
-    }
-
-    button {
-        padding: 14px;
-        border-radius: 10px;
-    }
-
-    .symbols {
-        margin-top: 10px;
-    }
-
-    .rules {
-        margin-top: 10px;
-        padding: 8px;
-    }
-
-    .info {
-        margin-top: 6px;
-        font-size: 10px;
-    }
-}
-</style>
+  </style>
 </head>
+<body class="antialiased text-gray-700">
 
-<body>
-
-<div class="game">
-
-    <div class="creators">
-        <div class="creators-title">✨ PROJETO DESENVOLVIDO POR ✨</div>
-        <div class="creators-list">
-            <span>Arthur</span>
-            <span>Diogo</span>
-            <span>Ryan</span>
-            <span>Myrella</span>
-            <span>Maria</span>
-            <span>Luara</span>
+  <main class="w-full max-w-[420px]">
+    <!-- Main Card Container -->
+    <div class="app-card rounded-3xl p-6 sm:p-8 border border-white/60 relative overflow-hidden transition-all duration-300">
+      
+      <!-- Top Progress Bar (Hidden on Screen 1, Lockout & Screen 6) -->
+      <div id="progress-container" class="mb-6 hidden">
+        <div class="flex justify-between items-center text-xs font-bold text-indigo-400 mb-2">
+          <span id="step-label">ETAPA 1 DE 4</span>
+          <span id="step-percent">25%</span>
         </div>
-    </div>
-
-    <h1>🍀 TENTE SUA SORTE</h1>
-
-    <div class="subtitle">
-        JOGO DE DEMONSTRAÇÃO
-    </div>
-
-    <div class="machine">
-
-        <div class="reels">
-            <div class="reel">🐯</div>
-            <div class="reel">⭐</div>
-            <div class="reel">💎</div>
-            <div class="reel">🍀</div>
-            <div class="reel">🍉</div>
-            <div class="reel">🔔</div>
+        <div class="w-full bg-indigo-50 rounded-full h-2 overflow-hidden">
+          <div id="progress-bar" class="bg-gradient-to-r from-indigo-400 to-pink-400 h-2 rounded-full transition-all duration-500 w-1/4"></div>
         </div>
+      </div>
 
-        <div class="message" id="message">
-            Aperte GIRAR! 🔊
+      <!-- TELA 1: Boas-vindas -->
+      <section id="screen-1" class="screen fade-in text-center py-4">
+        <div class="w-20 h-20 bg-gradient-to-tr from-indigo-100 to-pink-100 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-sm border border-white">
+          <svg class="w-10 h-10 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+          </svg>
         </div>
-
-        <button id="spin">
-            🎰 GIRAR
+        <h1 class="text-2xl font-extrabold text-gray-800 mb-3 tracking-tight">Olá Rafaela,</h1>
+        <p class="text-gray-500 font-semibold mb-8 text-base">pronta para o desafio?</p>
+        <button onclick="goToStep(2)" class="w-full py-4 bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-lg shadow-indigo-200 transition-all active:scale-[0.98]">
+          Iniciar
         </button>
+      </section>
 
-        <div class="symbols">
-            🐯 ⭐ 💎 🍀 🍉 🔔
+      <!-- TELA 2: Charada -->
+      <section id="screen-2" class="screen fade-in hidden text-center py-2">
+        <div class="inline-block px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold mb-4">
+          Charada
+        </div>
+        <h2 class="text-xl font-bold text-gray-800 mb-2">Descubra a resposta</h2>
+        <p class="text-sm text-gray-500 mb-6">Dica: <span class="font-bold text-indigo-600">parte do corpo</span></p>
+
+        <form onsubmit="handleRiddleSubmit(event)" class="space-y-4">
+          <div class="relative">
+            <input type="text" id="riddle-input" placeholder="Digite sua resposta..." autocomplete="off" class="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-center font-bold text-gray-800 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:font-normal placeholder:text-gray-400" />
+          </div>
+          <p id="riddle-error" class="text-xs text-rose-500 font-bold min-h-[16px] transition-all"></p>
+          <button type="submit" class="w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-2xl shadow-md shadow-indigo-100 transition-all active:scale-[0.98]">
+            Confirmar
+          </button>
+        </form>
+      </section>
+
+      <!-- TELA 3: Senha -->
+      <section id="screen-3" class="screen fade-in hidden text-center py-2">
+        <div class="inline-block px-3 py-1 bg-indigo-100 text-indigo-600 rounded-full text-xs font-bold mb-4">
+          Segurança
+        </div>
+        <h2 class="text-xl font-bold text-gray-800 mb-1">Digite a senha</h2>
+        <p class="text-sm text-gray-500 mb-6">Dois dígitos</p>
+
+        <form onsubmit="handlePasswordSubmit(event)" class="space-y-4">
+          <div class="flex justify-center">
+            <input type="password" id="password-input" maxlength="2" pattern="[0-9]*" inputmode="numeric" placeholder="••" autocomplete="off" class="w-28 text-center text-3xl tracking-widest font-extrabold py-3 bg-gray-50 border border-gray-200 rounded-2xl text-gray-800 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all placeholder:text-gray-300" />
+          </div>
+          <p id="password-error" class="text-xs text-rose-500 font-bold min-h-[16px] transition-all"></p>
+          <button type="submit" class="w-full py-3.5 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-2xl shadow-md shadow-indigo-100 transition-all active:scale-[0.98]">
+            Desbloquear
+          </button>
+        </form>
+      </section>
+
+      <!-- TELA 4: Jogo da Forca -->
+      <section id="screen-4" class="screen fade-in hidden text-center py-1">
+        <div class="inline-block px-3 py-1 bg-purple-100 text-purple-600 rounded-full text-xs font-bold mb-3">
+          Jogo da Forca
+        </div>
+        <p class="text-xs text-gray-500 mb-3">Dica: <span class="font-bold text-indigo-600">Eterno</span></p>
+
+        <!-- SVG Hangman Graphic -->
+        <div class="w-full h-28 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-center mb-4 p-2">
+          <svg class="h-24 w-32 stroke-indigo-400" fill="none" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 100 100">
+            <!-- Base & Scaffold -->
+            <path d="M 10 90 L 90 90" stroke-width="3" stroke="#cbd5e1" />
+            <path d="M 30 90 L 30 10 L 65 10 L 65 25" stroke-width="3" stroke="#cbd5e1" />
+            <!-- Head -->
+            <circle id="hangman-part-1" class="hidden" cx="65" cy="35" r="10" stroke-width="2.5" />
+            <!-- Body -->
+            <line id="hangman-part-2" class="hidden" x1="65" y1="45" x2="65" y2="65" stroke-width="2.5" />
+            <!-- Left Arm -->
+            <line id="hangman-part-3" class="hidden" x1="65" y1="50" x2="52" y2="60" stroke-width="2.5" />
+            <!-- Right Arm -->
+            <line id="hangman-part-4" class="hidden" x1="65" y1="50" x2="78" y2="60" stroke-width="2.5" />
+            <!-- Legs (5th error) -->
+            <g id="hangman-part-5" class="hidden">
+              <line x1="65" y1="65" x2="52" y2="80" stroke-width="2.5" />
+              <line x1="65" y1="65" x2="78" y2="80" stroke-width="2.5" />
+            </g>
+          </svg>
         </div>
 
+        <!-- Word Letters Display -->
+        <div id="hangman-word" class="flex justify-center gap-1.5 mb-4">
+          <!-- Populated by JS -->
+        </div>
+
+        <p id="hangman-error" class="text-xs text-rose-500 font-bold min-h-[16px] mb-3 transition-all"></p>
+
+        <!-- Virtual Keyboard -->
+        <div id="keyboard" class="grid grid-cols-7 gap-1 max-w-[340px] mx-auto">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- TELA 5: Três Portas -->
+      <section id="screen-5" class="screen fade-in hidden text-center py-2">
+        <h2 class="text-lg font-bold text-gray-800 mb-2 leading-tight">Escolha a porta certa para liberar o prêmio</h2>
+        <p class="text-xs text-gray-400 mb-6">Apenas uma porta é a verdadeira</p>
+
+        <div class="grid grid-cols-3 gap-3 mb-4">
+          <!-- Door 1 -->
+          <button onclick="chooseDoor(0)" class="door-card bg-gradient-to-b from-indigo-50 to-indigo-100/60 border border-indigo-100 rounded-2xl p-4 flex flex-col items-center justify-center hover:border-indigo-300 group">
+            <div class="w-12 h-16 bg-white rounded-t-xl rounded-b-md border-2 border-indigo-200 flex items-center justify-end pr-2 shadow-sm group-hover:border-indigo-400 transition-colors">
+              <div class="w-2 h-2 rounded-full bg-indigo-400"></div>
+            </div>
+            <span class="text-xs font-bold text-indigo-600 mt-3">Porta 1</span>
+          </button>
+
+          <!-- Door 2 -->
+          <button onclick="chooseDoor(1)" class="door-card bg-gradient-to-b from-pink-50 to-pink-100/60 border border-pink-100 rounded-2xl p-4 flex flex-col items-center justify-center hover:border-pink-300 group">
+            <div class="w-12 h-16 bg-white rounded-t-xl rounded-b-md border-2 border-pink-200 flex items-center justify-end pr-2 shadow-sm group-hover:border-pink-400 transition-colors">
+              <div class="w-2 h-2 rounded-full bg-pink-400"></div>
+            </div>
+            <span class="text-xs font-bold text-pink-600 mt-3">Porta 2</span>
+          </button>
+
+          <!-- Door 3 -->
+          <button onclick="chooseDoor(2)" class="door-card bg-gradient-to-b from-purple-50 to-purple-100/60 border border-purple-100 rounded-2xl p-4 flex flex-col items-center justify-center hover:border-purple-300 group">
+            <div class="w-12 h-16 bg-white rounded-t-xl rounded-b-md border-2 border-purple-200 flex items-center justify-end pr-2 shadow-sm group-hover:border-purple-400 transition-colors">
+              <div class="w-2 h-2 rounded-full bg-purple-400"></div>
+            </div>
+            <span class="text-xs font-bold text-purple-600 mt-3">Porta 3</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- TELA 6: Vitória Final -->
+      <section id="screen-6" class="screen fade-in hidden text-center py-6">
+        <div class="w-20 h-20 bg-emerald-100 text-emerald-500 rounded-3xl mx-auto flex items-center justify-center mb-6 border border-emerald-200/60 shadow-sm">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+
+        <h2 class="text-2xl font-extrabold text-gray-800 mb-2 leading-tight">Parabéns!</h2>
+        <p class="text-base font-bold text-indigo-600 mb-8">Você concluiu todos os desafios!</p>
+
+        <!-- Botão de revelação com link do Google Drive -->
+        <a href="https://drive.google.com/file/d/1pdKp2kahiNc7jO-JjElXgEMLZ4kudH_v/view?usp=sharing" 
+           target="_blank" 
+           rel="noopener noreferrer" 
+           class="inline-flex items-center justify-center w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 13-4-4m4 4l4-4"></path>
+          </svg>
+          Clique aqui para revelar seu prêmio
+        </a>
+      </section>
+
+      <!-- TELA DE BLOQUEIO / COUNTDOWN OVERLAY -->
+      <section id="screen-lockout" class="screen fade-in hidden text-center py-6">
+        <div class="w-16 h-16 bg-rose-50 rounded-2xl mx-auto flex items-center justify-center mb-5 border border-rose-100">
+          <svg class="w-8 h-8 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+        
+        <h2 id="lockout-title" class="text-lg font-bold text-gray-800 mb-2">Tente novamente em</h2>
+        
+        <div id="lockout-timer" class="text-3xl font-extrabold text-rose-500 tracking-wider my-4 font-mono bg-rose-50/50 py-3 rounded-2xl border border-rose-100">
+          00:00:00
+        </div>
+
+        <p class="text-xs text-gray-400 leading-relaxed px-4">
+          Acesso temporariamente bloqueado.<br>O tempo continua mesmo se você fechar a página.
+        </p>
+      </section>
+
     </div>
+  </main>
 
-    <div class="rules">
-        <div class="rules-title">📊 PROBABILIDADES E PREMIAÇÕES:</div>
-        2 iguais (93,19%) → <b>+20 pts</b> | 
-        3 iguais (21,30%) → <b>+50 pts</b> | 
-        4 iguais (2,31%) → <b>+200 pts</b> | 
-        5 iguais (0,154%) → <b>+500 pts</b> | 
-        6 iguais (0,0077%) → <b>+1000 pts (JACKPOT)</b>
-    </div>
+  <script>
+    /* STORAGE KEYS */
+    const KEY_STEP = 'desafio_rafaela_step';
+    const KEY_LOCK_UNTIL = 'desafio_rafaela_lock_until';
+    const KEY_LOCK_TITLE = 'desafio_rafaela_lock_title';
+    const KEY_RIDDLE_ERRORS = 'desafio_rafaela_riddle_errors';
 
-    <div class="info">
-        Pontos fictícios — sorteio 100% aleatório com efeitos sonoros.
-    </div>
+    /* STATE VARIABLES */
+    let currentStep = 1;
+    let timerInterval = null;
+    let winningDoor = -1;
 
-</div>
+    // Hangman Game State
+    const HANGMAN_WORD = "EVERLAST";
+    let guessedLetters = new Set();
+    let hangmanErrors = 0;
 
-<script>
-const symbols = ["🐯", "⭐", "💎", "🍀", "🍉", "🔔"];
-let spinning = false;
+    window.addEventListener('DOMContentLoaded', () => {
+      // Check lockout status first
+      if (checkLockout()) {
+        return;
+      }
 
-// Inicialização segura do AudioContext (suporte cross-browser/mobile)
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
+      // Restore step
+      const savedStep = parseInt(localStorage.getItem(KEY_STEP) || '1', 10);
+      goToStep(savedStep, false);
+    });
 
-function initAudio() {
-    if (!audioCtx) {
-        audioCtx = new AudioContextClass();
+    function goToStep(stepNumber, save = true) {
+      if (checkLockout()) return;
+
+      currentStep = stepNumber;
+      if (save) {
+        localStorage.setItem(KEY_STEP, currentStep.toString());
+      }
+
+      // Hide all screens
+      document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
+
+      // Update progress bar
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const stepLabel = document.getElementById('step-label');
+      const stepPercent = document.getElementById('step-percent');
+
+      if (currentStep >= 2 && currentStep <= 5) {
+        progressContainer.classList.remove('hidden');
+        const percentage = ((currentStep - 1) / 4) * 100;
+        progressBar.style.width = percentage + '%';
+        stepLabel.textContent = `ETAPA ${currentStep - 1} DE 4`;
+        stepPercent.textContent = `${Math.round(percentage)}%`;
+      } else {
+        progressContainer.classList.add('hidden');
+      }
+
+      // Show targeted screen
+      const activeScreen = document.getElementById(`screen-${currentStep}`);
+      if (activeScreen) {
+        activeScreen.classList.remove('hidden');
+      }
+
+      // Step specific setups
+      if (currentStep === 4) {
+        initHangman();
+      } else if (currentStep === 5) {
+        // Randomize door choice for this attempt
+        winningDoor = Math.floor(Math.random() * 3);
+      }
     }
-    if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
-}
 
-function playTickSound() {
-    if (!audioCtx) return;
-    try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(600 + Math.random() * 400, audioCtx.currentTime);
-        
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.05);
-    } catch(e) {}
-}
+    function handleRiddleSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('riddle-input');
+      const errorEl = document.getElementById('riddle-error');
+      const val = input.value.trim();
 
-function playWinSound(isJackpot = false) {
-    if (!audioCtx) return;
-    try {
-        const notes = isJackpot 
-            ? [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98]
-            : [523.25, 659.25, 783.99, 1046.50];
+      // Strict Validation: accepts "pé", "PÉ", "Pé", "pÉ", REJECTS "pe" strictly
+      if (val === 'pé' || val === 'PÉ' || val === 'Pé' || val === 'pÉ') {
+        errorEl.textContent = '';
+        localStorage.removeItem(KEY_RIDDLE_ERRORS);
+        goToStep(3);
+      } else {
+        // Shake animation
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 400);
 
-        notes.forEach((freq, index) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + index * 0.08);
-            
-            gain.gain.setValueAtTime(0.6, audioCtx.currentTime + index * 0.08);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.08 + 0.35);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start(audioCtx.currentTime + index * 0.08);
-            osc.stop(audioCtx.currentTime + index * 0.08 + 0.35);
-        });
-    } catch(e) {}
-}
+        let errors = parseInt(localStorage.getItem(KEY_RIDDLE_ERRORS) || '0', 10) + 1;
+        localStorage.setItem(KEY_RIDDLE_ERRORS, errors.toString());
 
-const reels = document.querySelectorAll(".reel");
-const message = document.getElementById("message");
-const button = document.getElementById("spin");
-
-function randomSymbol() {
-    return symbols[Math.floor(Math.random() * symbols.length)];
-}
-
-function spinReel(reel, time) {
-    return new Promise(resolve => {
-        reel.classList.add("spinning");
-
-        const interval = setInterval(() => {
-            reel.textContent = randomSymbol();
-            playTickSound();
-        }, 80);
-
-        setTimeout(() => {
-            clearInterval(interval);
-            const result = randomSymbol();
-            reel.textContent = result;
-            reel.classList.remove("spinning");
-            resolve(result);
-        }, time);
-    });
-}
-
-function spin() {
-    if (spinning) return;
-
-    initAudio();
-
-    spinning = true;
-    button.disabled = true;
-
-    reels.forEach(reel => {
-        reel.classList.remove("win");
-    });
-
-    message.textContent = "Girando... 🎰";
-
-    const promises = [...reels].map((reel, index) => {
-        return spinReel(reel, 1000 + index * 250);
-    });
-
-    Promise.all(promises).then(results => {
-        const counts = {};
-
-        results.forEach(symbol => {
-            counts[symbol] = (counts[symbol] || 0) + 1;
-        });
-
-        const maxEqual = Math.max(...Object.values(counts));
-
-        const rewards = {
-            2: 20,
-            3: 50,
-            4: 200,
-            5: 500,
-            6: 1000
-        };
-
-        const points = rewards[maxEqual] || 0;
-
-        if (maxEqual >= 2) {
-            playWinSound(maxEqual === 6);
-            message.textContent = maxEqual === 6 
-                ? "👑 JACKPOT! 6 IGUAIS! +1000 PONTOS! 👑"
-                : `🔥 ${maxEqual} IGUAIS! +${points} PONTOS! 🔥`;
-
-            const winningSymbol = Object.keys(counts).find(
-                symbol => counts[symbol] === maxEqual
-            );
-
-            reels.forEach(reel => {
-                if (reel.textContent === winningSymbol) {
-                    reel.classList.add("win");
-                }
-            });
+        if (errors >= 2) {
+          localStorage.removeItem(KEY_RIDDLE_ERRORS);
+          // Lock for 12 hours
+          triggerLockout(12 * 60 * 60 * 1000, "Tente novamente em 12 horas");
         } else {
-            message.textContent = "❌ Nenhuma combinação! (Todos diferentes)";
+          errorEl.textContent = 'Resposta incorreta! Você tem mais 1 tentativa.';
+        }
+      }
+    }
+
+    function handlePasswordSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('password-input');
+      const errorEl = document.getElementById('password-error');
+      const val = input.value.trim();
+
+      if (val === '36') {
+        errorEl.textContent = '';
+        goToStep(4);
+      } else {
+        input.classList.add('shake');
+        setTimeout(() => input.classList.remove('shake'), 400);
+        
+        // Lock for 30 seconds
+        triggerLockout(30 * 1000, "Tente novamente em");
+      }
+    }
+
+    function initHangman() {
+      guessedLetters.clear();
+      hangmanErrors = 0;
+      updateHangmanUI();
+      renderKeyboard();
+    }
+
+    function renderKeyboard() {
+      const keyboardEl = document.getElementById('keyboard');
+      keyboardEl.innerHTML = '';
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+      letters.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.textContent = letter;
+        btn.type = 'button';
+        btn.className = 'py-2 bg-gray-100 text-gray-700 font-bold rounded-xl text-xs hover:bg-indigo-50 hover:text-indigo-600 transition-colors disabled:opacity-30 disabled:hover:bg-gray-100 disabled:hover:text-gray-700';
+        btn.onclick = () => handleHangmanGuess(letter, btn);
+        keyboardEl.appendChild(btn);
+      });
+    }
+
+    function handleHangmanGuess(letter, buttonEl) {
+      if (guessedLetters.has(letter) || hangmanErrors >= 5) return;
+
+      guessedLetters.add(letter);
+      buttonEl.disabled = true;
+
+      if (HANGMAN_WORD.includes(letter)) {
+        buttonEl.classList.add('bg-emerald-100', 'text-emerald-700');
+      } else {
+        buttonEl.classList.add('bg-rose-100', 'text-rose-600');
+        hangmanErrors++;
+      }
+
+      updateHangmanUI();
+
+      // Check Win
+      const isWon = HANGMAN_WORD.split('').every(l => guessedLetters.has(l));
+      if (isWon) {
+        setTimeout(() => goToStep(5), 600);
+      } else if (hangmanErrors >= 5) {
+        // Lock for 12 hours on 5 errors
+        setTimeout(() => {
+          triggerLockout(12 * 60 * 60 * 1000, "Tente novamente em 12 horas");
+        }, 500);
+      }
+    }
+
+    function updateHangmanUI() {
+      // Word display
+      const wordEl = document.getElementById('hangman-word');
+      wordEl.innerHTML = '';
+      HANGMAN_WORD.split('').forEach(letter => {
+        const box = document.createElement('div');
+        box.className = 'w-8 h-10 border-b-2 border-indigo-400 flex items-center justify-center font-extrabold text-base text-gray-800';
+        box.textContent = guessedLetters.has(letter) ? letter : '';
+        wordEl.appendChild(box);
+      });
+
+      // SVG hangman parts
+      for (let i = 1; i <= 5; i++) {
+        const part = document.getElementById(`hangman-part-${i}`);
+        if (part) {
+          if (i <= hangmanErrors) {
+            part.classList.remove('hidden');
+          } else {
+            part.classList.add('hidden');
+          }
+        }
+      }
+
+      // Errors label
+      const errorEl = document.getElementById('hangman-error');
+      errorEl.textContent = hangmanErrors > 0 ? `Erros: ${hangmanErrors} de 5` : '';
+    }
+
+    function chooseDoor(doorIndex) {
+      if (doorIndex === winningDoor) {
+        // Correct door! Go to Victory screen
+        goToStep(6);
+      } else {
+        // Wrong door -> Lock for 2 hours
+        triggerLockout(2 * 60 * 60 * 1000, "Tente novamente em 2 horas");
+      }
+    }
+
+    function triggerLockout(durationMs, titleMessage) {
+      const lockUntil = Date.now() + durationMs;
+      localStorage.setItem(KEY_LOCK_UNTIL, lockUntil.toString());
+      localStorage.setItem(KEY_LOCK_TITLE, titleMessage);
+      checkLockout();
+    }
+
+    function checkLockout() {
+      const lockUntil = parseInt(localStorage.getItem(KEY_LOCK_UNTIL) || '0', 10);
+      const titleMsg = localStorage.getItem(KEY_LOCK_TITLE) || "Tente novamente em";
+
+      if (lockUntil && Date.now() < lockUntil) {
+        // Hide progress bar and screens
+        document.getElementById('progress-container').classList.add('hidden');
+        document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
+
+        // Show lock screen
+        const lockScreen = document.getElementById('screen-lockout');
+        const lockTitle = document.getElementById('lockout-title');
+        lockTitle.textContent = titleMsg;
+        lockScreen.classList.remove('hidden');
+
+        startLockoutTimer(lockUntil);
+        return true;
+      } else {
+        // Clear expired lockout
+        localStorage.removeItem(KEY_LOCK_UNTIL);
+        localStorage.removeItem(KEY_LOCK_TITLE);
+        document.getElementById('screen-lockout').classList.add('hidden');
+        if (timerInterval) clearInterval(timerInterval);
+        return false;
+      }
+    }
+
+    function startLockoutTimer(lockUntil) {
+      if (timerInterval) clearInterval(timerInterval);
+
+      const updateDisplay = () => {
+        const remaining = lockUntil - Date.now();
+        if (remaining <= 0) {
+          clearInterval(timerInterval);
+          checkLockout();
+          goToStep(currentStep, false);
+          return;
         }
 
-        spinning = false;
-        button.disabled = false;
-    });
-}
+        const hours = Math.floor(remaining / (1000 * 60 * 60));
+        const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((remaining % (1000 * 60)) / 1000);
 
-// Eventos ajustados para Mobile (suporte a toque sem atraso)
-button.addEventListener("pointerdown", initAudio, { once: true });
-button.addEventListener("click", spin);
-</script>
+        const pad = (n) => n.toString().padStart(2, '0');
+        document.getElementById('lockout-timer').textContent = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      };
 
+      updateDisplay();
+      timerInterval = setInterval(updateDisplay, 1000);
+    }
+  </script>
 </body>
 </html>
+
+
