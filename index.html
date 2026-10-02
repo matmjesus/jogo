@@ -6,9 +6,8 @@
     <meta name="theme-color" content="#090d12">
     <title>🎰 Roleta de Cassino - Tela Principal (Notebook)</title>
     
-    <!-- CDNs: PeerJS, QRCode.js, TailwindCSS e FontAwesome -->
+    <!-- CDNs: PeerJS, TailwindCSS e FontAwesome -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -204,45 +203,14 @@
                 </div>
             </div>
 
-            <!-- BADGE DO MODO DE JOGO ATUAL -->
-            <div class="bg-slate-900 border border-slate-700 px-4 py-2 rounded-xl flex items-center gap-3">
+            <!-- BADGE DO MODO DE JOGO ATUAL (OCULTO) -->
+            <div class="hidden bg-slate-900 border border-slate-700 px-4 py-2 rounded-xl items-center gap-3">
                 <span class="text-[11px] text-slate-400 font-extrabold uppercase tracking-wider">Modo Atual:</span>
                 <span id="badgeModo" class="text-sm font-black text-blue-400 uppercase tracking-widest bg-blue-950/60 px-3 py-1 rounded-lg border border-blue-800/50">
                     NORMAL
                 </span>
             </div>
         </header>
-
-        <!-- PAINEL DE CONEXÃO P2P E QR CODE -->
-        <section class="bg-slate-950 border border-slate-800 p-4 rounded-2xl mb-6 grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-            
-            <div class="md:col-span-2 flex flex-col justify-center">
-                <div class="flex items-center gap-2 mb-1">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Código de Pareamento P2P</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span id="displayCodigo" class="text-4xl font-black font-mono text-emerald-400 tracking-widest bg-slate-900 px-4 py-1.5 rounded-xl border border-slate-800">
-                        ----
-                    </span>
-                    <button onclick="copiarCodigo()" title="Copiar Código" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl transition border border-slate-700 active:scale-95">
-                        <i class="fa-solid fa-copy"></i>
-                    </button>
-                </div>
-                <div id="statusConexao" class="text-xs font-semibold text-slate-400 mt-2 flex items-center gap-1.5">
-                    <i class="fa-solid fa-circle-notch fa-spin text-amber-400"></i>
-                    <span>Aguardando conexão do celular...</span>
-                </div>
-            </div>
-
-            <!-- CONTAINER DO QR CODE -->
-            <div class="flex flex-col items-center justify-center bg-white p-2.5 rounded-xl shadow-md border-2 border-amber-400/50">
-                <div id="qrcode" class="w-24 h-24 flex items-center justify-center"></div>
-                <span class="text-[9px] text-slate-900 font-black mt-1.5 uppercase tracking-wider text-center">
-                    Escaneie para Abrir o Controle
-                </span>
-            </div>
-        </section>
 
         <!-- ROLETA / CARRETÉIS DE CASSINO (5 REELS) -->
         <section class="slot-display">
@@ -305,7 +273,7 @@
         let modoAtual = "normal"; // 'normal', 'facil', ou 'dificil'
         let simboloAlvoFacil = null;
 
-        let roomCode = '';
+        const roomCode = '7646'; // Código P2P fixo
         let peerNotebook = null;
 
         // Canal local para testes na mesma aba/navegador
@@ -392,12 +360,6 @@
 
         // INICIALIZAÇÃO DO SERVIDOR RECEPTOR (NOTEBOOK)
         function initPeerNotebook() {
-            // Gera um código numérico de 4 dígitos (Ex: 4829)
-            roomCode = Math.floor(1000 + Math.random() * 9000).toString();
-            document.getElementById('displayCodigo').innerText = roomCode;
-
-            gerarQRCodeParaControle(roomCode);
-
             const peerId = 'roleta-' + roomCode;
 
             // Escuta mensagens via BroadcastChannel local (Fallback offline/local)
@@ -414,75 +376,20 @@
             try {
                 peerNotebook = new Peer(peerId);
 
-                peerNotebook.on('open', () => {
-                    atualizarStatusConexao(false, "Servidor Pronto. Escaneie o QR Code ou digite o código no celular.");
-                });
-
                 peerNotebook.on('connection', (conn) => {
-                    atualizarStatusConexao(true, "📱 Controle Conectado com Sucesso!");
                     tocarSomVitoria();
 
                     conn.on('data', (data) => {
                         processarComandoRemoto(data);
                     });
-
-                    conn.on('close', () => {
-                        atualizarStatusConexao(false, "Controle desconectado. Aguardando nova conexão...");
-                    });
                 });
 
                 peerNotebook.on('error', (err) => {
                     console.warn("PeerJS operando em modo fallback local:", err);
-                    atualizarStatusConexao(false, "Modo P2P Local Ativo (Mesmo Navegador/Rede)");
                 });
             } catch (e) {
                 console.warn("WebSocket bloqueado ou sem acesso externo:", e);
-                atualizarStatusConexao(false, "Modo Local Ativo");
             }
-        }
-
-        function atualizarStatusConexao(conectado, mensagem) {
-            const el = document.getElementById('statusConexao');
-            if (conectado) {
-                el.className = 'text-xs font-bold text-emerald-400 mt-2 flex items-center gap-1.5';
-                el.innerHTML = `<i class="fa-solid fa-check-circle"></i> <span>${mensagem}</span>`;
-            } else {
-                el.className = 'text-xs font-semibold text-slate-400 mt-2 flex items-center gap-1.5';
-                el.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-amber-400"></i> <span>${mensagem}</span>`;
-            }
-        }
-
-        function gerarQRCodeParaControle(codigo) {
-            const container = document.getElementById('qrcode');
-            container.innerHTML = '';
-
-            // Monta a URL completa para a página do controle
-            const urlAtual = window.location.href.substring(0, window.location.href.lastIndexOf('/'));
-            const linkControle = `${urlAtual}/controle.html?code=${codigo}`;
-
-            new QRCode(container, {
-                text: linkControle,
-                width: 96,
-                height: 96,
-                colorDark: "#070a0e",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.M
-            });
-        }
-
-        function copiarCodigo() {
-            tocarSomClique();
-            document.execCommand('copy');
-            const el = document.getElementById('displayCodigo');
-            const textoOriginal = el.innerText;
-            
-            // Tenta usar a API de Área de Transferência
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(roomCode);
-            }
-
-            el.innerText = "COPIADO!";
-            setTimeout(() => { el.innerText = textoOriginal; }, 1200);
         }
 
         function processarComandoRemoto(comando) {
@@ -504,14 +411,16 @@
             if (novoModo === 'facil') simboloAlvoFacil = null;
 
             const badge = document.getElementById('badgeModo');
-            badge.innerText = novoModo.toUpperCase();
+            if (badge) {
+                badge.innerText = novoModo.toUpperCase();
 
-            if (novoModo === 'facil') {
-                badge.className = 'text-sm font-black text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-3 py-1 rounded-lg border border-emerald-700/60 shadow-lg shadow-emerald-900/30';
-            } else if (novoModo === 'dificil') {
-                badge.className = 'text-sm font-black text-rose-400 uppercase tracking-widest bg-rose-950/80 px-3 py-1 rounded-lg border border-rose-700/60 shadow-lg shadow-rose-900/30';
-            } else {
-                badge.className = 'text-sm font-black text-blue-400 uppercase tracking-widest bg-blue-950/60 px-3 py-1 rounded-lg border border-blue-800/50';
+                if (novoModo === 'facil') {
+                    badge.className = 'text-sm font-black text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-3 py-1 rounded-lg border border-emerald-700/60 shadow-lg shadow-emerald-900/30';
+                } else if (novoModo === 'dificil') {
+                    badge.className = 'text-sm font-black text-rose-400 uppercase tracking-widest bg-rose-950/80 px-3 py-1 rounded-lg border border-rose-700/60 shadow-lg shadow-rose-900/30';
+                } else {
+                    badge.className = 'text-sm font-black text-blue-400 uppercase tracking-widest bg-blue-950/60 px-3 py-1 rounded-lg border border-blue-800/50';
+                }
             }
         }
 
